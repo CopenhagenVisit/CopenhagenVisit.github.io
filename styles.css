@@ -302,47 +302,79 @@ body {
 .recommendation-card.category-Activities { border-left-color: var(--cat-activities); }
 .recommendation-card.category-Chill { border-left-color: var(--cat-chill); }
 .recommendation-card.category-Concert { border-left-color: var(--cat-concert); }
-.recommendation-card.category-Drinkplaces { border-left-color: var(--cat-drink); }
-.recommendation-card.category-Touristy { border-left-color: var(--cat-touristy); }
-.recommendation-card.category-Eat { border-left-color: var(--cat-eat); }
-.recommendation-card.category-Uncategorized { border-left-color: var(--cat-default); }
 
-/* SortableJS dragging styles */
-.sortable-ghost {
-  opacity: 0.4;
-  background: #cceeff;
-  border-radius: var(--card-radius); /* Match card radius */
-}
-.sortable-drag {
-  opacity: 0.9;
-  transform: rotate(2deg);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+/* --- Mobile Adjustments --- */
+@media (max-width: 768px) { /* Target tablets and phones */
 
-/* Loading/Error states */
-.loading-state,
-.error-state {
-  padding: 1rem;
-  text-align: center;
-  color: var(--text-light);
-  font-size: 0.9rem;
-  width: 100%; /* Span full container width */
-}
-
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(0, 82, 204, 0.2);
-  border-radius: 50%;
-  border-top-color: var(--primary);
-  animation: spin 1s ease-in-out infinite;
-  display: inline-block;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  .board-container {
+    /* Optional: Add scroll snapping for a nicer feel */
+    scroll-snap-type: x mandatory;
+    /* Increase gap slightly for better touch separation */
+    gap: calc(var(--spacing) * 2.5);
+    padding: var(--spacing); /* Reduce padding on smaller screens */
   }
+
+  /* Override the flex-basis calculations and set a fixed width */
+  .board-container.columns-3 .board-column:not(.hidden),
+  .board-container.columns-4 .board-column:not(.hidden) {
+    flex-basis: auto; /* Reset basis */
+    width: 80vw; /* Make columns 80% of viewport width */
+    flex-shrink: 0; /* Prevent shrinking */
+    /* Optional: Snap alignment */
+    scroll-snap-align: start;
+  }
+
+  /* Ensure hidden column still hides correctly */
+  .board-column.hidden {
+    width: 0 !important;
+    flex-basis: 0 !important;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+    border: none;
+    margin-left: calc(var(--spacing) * -2.5); /* Adjust negative margin to match new gap */
+  }
+
+  .app-header h1 {
+      font-size: 1.1rem; /* Slightly smaller header */
+  }
+
+  .share-bar {
+      flex-wrap: wrap; /* Allow wrapping on small screens */
+      padding: var(--spacing);
+  }
+  .share-bar label {
+      width: 100%; /* Make label take full width */
+      margin-bottom: calc(var(--spacing) * 0.5);
+      text-align: center;
+  }
+  .share-bar input[type="text"] {
+      font-size: 0.8rem; /* Even smaller for mobile */
+  }
+   .share-bar button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+  }
+
+}
+
+@media (max-width: 480px) { /* Further adjustments for very small phones */
+    .board-column:not(.hidden) {
+        width: 85vw; /* Slightly wider on very small screens */
+    }
+     .app-header {
+        padding: var(--spacing);
+     }
+     .app-header h1 {
+        font-size: 1rem;
+     }
+     .controls button span {
+         display: none; /* Hide text on toggle button, show only icon */
+     }
+     .controls button {
+         padding: var(--spacing); /* Adjust padding */
+     }
+     .share-bar input[type="text"] {
+        font-size: 0.75rem;
+     }
 }
