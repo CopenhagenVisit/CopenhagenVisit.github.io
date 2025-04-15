@@ -1,357 +1,348 @@
+/* CSS (styles.css) */
 :root {
-    --board-bg: #f4f5f7; /* Light gray */
-    --column-bg: #ebecf0; /* Slightly darker gray */
-    --card-bg: #ffffff;
-    --text-dark: #172b4d; /* Dark blue/gray */
-    --text-medium: #42526e; /* Medium blue/gray */
-    --text-light: #6b778c; /* Light blue/gray */
-    --primary: #0052cc; /* Blue */
-    --primary-dark: #0041a3; /* Darker blue for hover */
-    --border-color: #dfe1e6;
-    --shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
-      rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-    --radius: 6px;
-    --card-radius: 3px;
-    --spacing: 8px;
-  
-    /* Category Colors */
-    --cat-sightseeing: #00b8d9; /* Cyan */
-    --cat-curios: #6554c0; /* Purple */
-    --cat-art: #ff7452; /* Orange */
-    --cat-activities: #36b37e; /* Green */
-    --cat-chill: #ffab00; /* Yellow */
-    --cat-concert: #ff8b00; /* Dark Orange */
-    --cat-drink: #00c7e6; /* Light Cyan */
-    --cat-touristy: #de350b; /* Red */
-    --cat-eat: #eb5a46; /* Salmon */
-    --cat-default: #7a869a; /* Gray */
-    --cat-uncategorized: var(--cat-default); /* Alias for consistency */
-  }
-  
-  * {
-    box-sizing: border-box;
-  }
-  
-  html {
-    height: 100%;
-  }
-  
-  body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--board-bg);
-    color: var(--text-dark);
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Prevent body scroll */
-  }
-  
-  .app-header {
-    padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0; /* Prevent header shrinking */
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  
-  .app-header h1 {
-    font-size: 1.25rem;
-    margin: 0;
-    color: var(--text-dark);
-  }
-  
-  .controls button {
-    background-color: var(--column-bg);
-    border: none;
-    border-radius: var(--card-radius);
-    padding: var(--spacing) calc(var(--spacing) * 1.5);
-    font-size: 0.9rem;
+  --board-bg: #f4f5f7; /* Light gray */
+  --column-bg: #ebecf0; /* Slightly darker gray */
+  --card-bg: #ffffff;
+  --text-dark: #172b4d; /* Dark blue/gray */
+  --text-medium: #42526e; /* Medium blue/gray */
+  --text-light: #6b778c; /* Light blue/gray */
+  --primary: #0052cc; /* Blue */
+  --primary-dark: #0041a3; /* Darker blue for hover */
+  --border-color: #dfe1e6;
+  --shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  --radius: 6px;
+  --card-radius: 3px;
+  --spacing: 8px;
+  --highlight-bg: #d1e7ff; /* Light blue for flash */
+
+  /* Category Colors */
+  --cat-sightseeing: #00b8d9; /* Cyan */
+  --cat-curios: #6554c0; /* Purple */
+  --cat-art: #ff7452; /* Orange */
+  --cat-activities: #36b37e; /* Green */
+  --cat-chill: #ffab00; /* Yellow */
+  --cat-concert: #ff8b00; /* Dark Orange */
+  --cat-drink: #00c7e6; /* Light Cyan */
+  --cat-touristy: #de350b; /* Red */
+  --cat-eat: #eb5a46; /* Salmon */
+  --cat-default: #7a869a; /* Gray */
+  --cat-uncategorized: var(--cat-default); /* Alias for consistency */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--board-bg);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent body scroll */
+}
+
+.app-header {
+  padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0; /* Prevent header shrinking */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-dark);
+}
+
+.controls button {
+  background-color: var(--column-bg);
+  border: none;
+  border-radius: var(--card-radius);
+  padding: var(--spacing) calc(var(--spacing) * 1.5);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-medium);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: inline-flex; /* For icon alignment */
+  align-items: center;
+  gap: 0.5em; /* Space between icon and text */
+}
+
+.controls button:hover {
+  background-color: #dfe1e6;
+}
+.controls button:active {
+  transform: scale(0.98); /* Fun button press effect */
+}
+
+/* --- Share Bar Styles --- */
+.share-bar {
+  background-color: #e9ecef; /* Slightly different background */
+  padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.share-bar label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-medium);
+  white-space: nowrap;
+}
+
+.share-bar input[type="text"] {
+  flex-grow: 1;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem; /* Slightly smaller font */
+  border: 1px solid #ced4da;
+  border-radius: var(--card-radius);
+  background-color: #ffffff;
+  color: var(--text-medium);
+  overflow-x: auto; /* Handle long URLs */
+  white-space: nowrap;
+  font-family: monospace; /* Easier to read URLs */
+  transition: background-color 0.4s ease-out; /* Transition for flash */
+}
+
+/* Style for the URL update flash */
+.share-bar input[type="text"].url-updated {
+    background-color: var(--highlight-bg);
+}
+
+
+.share-bar button {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--card-radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  transition: background-color 0.2s, transform 0.1s;
+  flex-shrink: 0; /* Prevent button shrinking */
+}
+.share-bar button:hover {
+  background-color: var(--primary-dark);
+}
+.share-bar button:active {
+  transform: scale(0.98);
+}
+.share-bar button i {
+  font-size: 0.9em;
+}
+
+.copy-confirm-inline {
+    font-size: 0.8rem;
+    color: var(--cat-activities); /* Green for success */
+    margin-left: 0.5rem;
     font-weight: 500;
-    color: var(--text-medium);
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    display: inline-flex; /* For icon alignment */
-    align-items: center;
-    gap: 0.5em; /* Space between icon and text */
-  }
-  
-  .controls button:hover {
-    background-color: #dfe1e6;
-  }
-  .controls button:active {
-    transform: scale(0.98); /* Fun button press effect */
-  }
-  
-  /* --- Share Bar Styles --- */
-  .share-bar {
-    background-color: #e9ecef; /* Slightly different background */
-    padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing);
-    border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0; /* Prevent shrinking */
-    transition: background-color 0.3s ease; /* For shake effect */
-  }
-  
-  .share-bar label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-medium);
-    white-space: nowrap;
-  }
-  
-  .share-bar input[type="text"] {
-    flex-grow: 1;
-    padding: 0.5rem 0.8rem;
-    font-size: 0.85rem; /* Slightly smaller font */
-    border: 1px solid #ced4da;
-    border-radius: var(--card-radius);
-    background-color: #ffffff;
-    color: var(--text-medium);
-    overflow-x: auto; /* Handle long URLs */
-    white-space: nowrap;
-    font-family: monospace; /* Easier to read URLs */
-  }
-  
-  .share-bar button {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: var(--card-radius);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4em;
-    transition: background-color 0.2s, transform 0.1s;
-    flex-shrink: 0; /* Prevent button shrinking */
-  }
-  .share-bar button:hover {
-    background-color: var(--primary-dark);
-  }
-  .share-bar button:active {
-    transform: scale(0.98);
-  }
-  .share-bar button i {
-    font-size: 0.9em;
-  }
-  
-  .copy-confirm-inline {
-      font-size: 0.8rem;
-      color: var(--cat-activities); /* Green for success */
-      margin-left: 0.5rem;
-      font-weight: 500;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      white-space: nowrap;
-  }
-  .copy-confirm-inline.visible {
-      opacity: 1;
-  }
-  
-  /* Punch Shake Animation */
-  @keyframes punch-shake {
-    0% { transform: translateX(0); background-color: #e9ecef; }
-    10% { transform: translateX(-3px); background-color: #ddeeff; } /* Subtle blue flash */
-    20% { transform: translateX(3px); }
-    30% { transform: translateX(-3px); }
-    40% { transform: translateX(2px); }
-    50% { transform: translateX(-2px); }
-    60% { transform: translateX(2px); }
-    70% { transform: translateX(-1px); }
-    80% { transform: translateX(1px); }
-    90% { transform: translateX(-1px); }
-    100% { transform: translateX(0); background-color: #e9ecef; }
-  }
-  
-  .shake-effect {
-    animation: punch-shake 0.5s ease-in-out;
-  }
-  
-  /* --- Board Styles --- */
-  .board-container {
-    display: flex;
-    flex-grow: 1; /* Takes remaining height */
-    padding: calc(var(--spacing) * 2);
-    gap: calc(var(--spacing) * 2);
-    overflow-x: auto; /* Enable horizontal scrolling if needed */
-    align-items: stretch; /* Make columns same height */
-  }
-  
-  .board-column {
-    background-color: var(--column-bg);
-    border-radius: var(--radius);
-    display: flex;
-    flex-direction: column;
-    /* Flex basis will be set by JS via parent class */
-    flex-shrink: 0;
-    max-height: 100%; /* Fill available vertical space */
-    transition: flex-basis 0.3s ease, opacity 0.3s ease, padding 0.3s ease,
-      margin-left 0.3s ease;
-  }
-  
-  /* Dynamic Column Widths */
-  .board-container.columns-3 .board-column:not(.hidden) {
-    flex-basis: calc((100% - var(--spacing) * 4) / 3); /* 2 gaps */
-  }
-  .board-container.columns-4 .board-column:not(.hidden) {
-    flex-basis: calc((100% - var(--spacing) * 6) / 4); /* 3 gaps */
-  }
-  
-  .board-column.hidden {
-    flex-basis: 0 !important; /* Override specific widths */
-    padding: 0;
     opacity: 0;
-    overflow: hidden;
-    border: none;
-    margin-left: calc(var(--spacing) * -2); /* Hide gap */
-  }
-  
-  .column-header {
-    padding: var(--spacing) calc(var(--spacing) * 1.5);
-    margin-bottom: var(--spacing);
-    font-weight: 600;
-    color: var(--text-medium);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0; /* Prevent header shrinking */
-  }
-  
-  .column-title {
-    font-size: 0.95rem;
-  }
-  
-  .weather-info {
-    font-size: 0.85rem;
-    text-align: right;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing);
-    min-height: 30px; /* Ensure space even when loading/error */
-  }
-  
-  .weather-info img {
-    width: 30px;
-    height: 30px;
-  }
-  .weather-info i { /* Style for error/key icons */
-      font-size: 1.1em;
-      color: var(--text-light);
-  }
-  
-  .column-list {
-    list-style: none;
-    padding: 0 var(--spacing) var(--spacing); /* Add padding around list */
-    margin: 0;
-    flex-grow: 1; /* Takes remaining space in column */
-    overflow-y: auto; /* Enable vertical scroll within column */
-    min-height: 60px; /* Ensure drop target area */
-  }
-  
-  .recommendation-card {
-    background-color: var(--card-bg);
-    border-radius: var(--card-radius);
-    padding: calc(var(--spacing) * 1.25);
-    margin-bottom: var(--spacing);
-    box-shadow: var(--shadow);
-    cursor: grab;
-    border-left: 4px solid transparent; /* For category color */
-    transition: border-color 0.2s;
-  }
-  
-  .recommendation-card:hover {
-    background-color: #f8f9fa;
-  }
-  
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing);
-    margin-bottom: calc(var(--spacing) * 0.5);
-  }
-  
-  .card-emoji {
-    font-size: 1.1rem;
-    line-height: 1;
-  }
-  
-  .card-name {
-    flex-grow: 1;
-    font-weight: 600; /* Make title bolder */
-    font-size: 0.95rem;
-    color: var(--text-dark);
-  }
-  
-  .card-description {
-    font-size: 0.85rem;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+}
+.copy-confirm-inline.visible {
+    opacity: 1;
+}
+
+/* --- Board Styles --- */
+.board-container {
+  display: flex;
+  flex-grow: 1; /* Takes remaining height */
+  padding: calc(var(--spacing) * 2);
+  gap: calc(var(--spacing) * 2);
+  overflow-x: auto; /* Enable horizontal scrolling if needed */
+  align-items: stretch; /* Make columns same height */
+}
+
+.board-column {
+  background-color: var(--column-bg);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  /* Flex basis will be set by JS via parent class */
+  flex-shrink: 0;
+  max-height: 100%; /* Fill available vertical space */
+  transition: flex-basis 0.3s ease, opacity 0.3s ease, padding 0.3s ease,
+    margin-left 0.3s ease;
+}
+
+/* Dynamic Column Widths */
+.board-container.columns-3 .board-column:not(.hidden) {
+  flex-basis: calc((100% - var(--spacing) * 4) / 3); /* 2 gaps */
+}
+.board-container.columns-4 .board-column:not(.hidden) {
+  flex-basis: calc((100% - var(--spacing) * 6) / 4); /* 3 gaps */
+}
+
+.board-column.hidden {
+  flex-basis: 0 !important; /* Override specific widths */
+  padding: 0;
+  opacity: 0;
+  overflow: hidden;
+  border: none;
+  margin-left: calc(var(--spacing) * -2); /* Hide gap */
+}
+
+.column-header {
+  padding: var(--spacing) calc(var(--spacing) * 1.5);
+  margin-bottom: var(--spacing);
+  font-weight: 600;
+  color: var(--text-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0; /* Prevent header shrinking */
+}
+
+.column-title {
+  font-size: 0.95rem;
+}
+
+.weather-info {
+  font-size: 0.85rem;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  min-height: 30px; /* Ensure space even when loading/error */
+}
+
+.weather-info img {
+  width: 30px;
+  height: 30px;
+}
+.weather-info i { /* Style for error/key icons */
+    font-size: 1.1em;
     color: var(--text-light);
-    padding-left: calc(
-      1.1rem + var(--spacing)
-    ); /* Indent description relative to emoji size + gap */
-    line-height: 1.4;
-    margin-top: calc(var(--spacing) * -0.25); /* Pull up slightly */
+}
+
+.column-list {
+  list-style: none;
+  padding: 0 var(--spacing) var(--spacing); /* Add padding around list */
+  margin: 0;
+  flex-grow: 1; /* Takes remaining space in column */
+  overflow-y: auto; /* Enable vertical scroll within column */
+  min-height: 60px; /* Ensure drop target area */
+}
+
+.recommendation-card {
+  background-color: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: calc(var(--spacing) * 1.25);
+  margin-bottom: var(--spacing);
+  box-shadow: var(--shadow);
+  cursor: grab;
+  border-left: 4px solid transparent; /* For category color */
+  transition: border-color 0.2s;
+}
+
+.recommendation-card:hover {
+  background-color: #f8f9fa;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  margin-bottom: calc(var(--spacing) * 0.5);
+}
+
+.card-emoji {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.card-name {
+  flex-grow: 1;
+  font-weight: 600; /* Make title bolder */
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+/* CSS (styles.css) - Continued */
+
+.card-description {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  padding-left: calc(
+    1.1rem + var(--spacing)
+  ); /* Indent description relative to emoji size + gap */
+  line-height: 1.4;
+  margin-top: calc(var(--spacing) * -0.25); /* Pull up slightly */
+}
+
+/* Category Border Colors */
+.recommendation-card.category-Sightseeing { border-left-color: var(--cat-sightseeing); }
+.recommendation-card.category-Curios { border-left-color: var(--cat-curios); }
+.recommendation-card.category-Art { border-left-color: var(--cat-art); }
+.recommendation-card.category-Activities { border-left-color: var(--cat-activities); }
+.recommendation-card.category-Chill { border-left-color: var(--cat-chill); }
+.recommendation-card.category-Concert { border-left-color: var(--cat-concert); }
+.recommendation-card.category-Drinkplaces { border-left-color: var(--cat-drink); }
+.recommendation-card.category-Touristy { border-left-color: var(--cat-touristy); }
+.recommendation-card.category-Eat { border-left-color: var(--cat-eat); }
+.recommendation-card.category-Uncategorized { border-left-color: var(--cat-default); }
+
+/* SortableJS dragging styles */
+.sortable-ghost {
+  opacity: 0.4;
+  background: #cceeff;
+  border-radius: var(--card-radius); /* Match card radius */
+}
+.sortable-drag {
+  opacity: 0.9;
+  transform: rotate(2deg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading/Error states */
+.loading-state,
+.error-state {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  width: 100%; /* Span full container width */
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 82, 204, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 1s ease-in-out infinite;
+  display: inline-block;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-  
-  /* Category Border Colors */
-  .recommendation-card.category-Sightseeing { border-left-color: var(--cat-sightseeing); }
-  .recommendation-card.category-Curios { border-left-color: var(--cat-curios); }
-  .recommendation-card.category-Art { border-left-color: var(--cat-art); }
-  .recommendation-card.category-Activities { border-left-color: var(--cat-activities); }
-  .recommendation-card.category-Chill { border-left-color: var(--cat-chill); }
-  .recommendation-card.category-Concert { border-left-color: var(--cat-concert); }
-  .recommendation-card.category-Drinkplaces { border-left-color: var(--cat-drink); }
-  .recommendation-card.category-Touristy { border-left-color: var(--cat-touristy); }
-  .recommendation-card.category-Eat { border-left-color: var(--cat-eat); }
-  .recommendation-card.category-Uncategorized { border-left-color: var(--cat-default); }
-  
-  /* SortableJS dragging styles */
-  .sortable-ghost {
-    opacity: 0.4;
-    background: #cceeff;
-  }
-  .sortable-drag {
-    opacity: 0.9;
-    transform: rotate(2deg);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Loading/Error states */
-  .loading-state,
-  .error-state {
-    padding: 1rem;
-    text-align: center;
-    color: var(--text-light);
-    font-size: 0.9rem;
-    width: 100%; /* Span full container width */
-  }
-  
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(0, 82, 204, 0.2);
-    border-radius: 50%;
-    border-top-color: var(--primary);
-    animation: spin 1s ease-in-out infinite;
-    display: inline-block;
-    margin-right: 0.5rem;
-    vertical-align: middle;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
+}
