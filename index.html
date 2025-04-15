@@ -8,103 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-  <style>
-    /* CSS remains the same as the previous version */
-    :root {
-      --board-bg: #f4f5f7; --column-bg: #ebecf0; --card-bg: #ffffff;
-      --text-dark: #172b4d; --text-medium: #42526e; --text-light: #6b778c;
-      --primary: #0052cc; --border-color: #dfe1e6;
-      --shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-      --radius: 6px; --card-radius: 3px; --spacing: 8px;
-      --cat-sightseeing: #00b8d9; --cat-curios: #6554c0; --cat-art: #ff7452;
-      --cat-activities: #36b37e; --cat-chill: #ffab00; --cat-concert: #ff8b00;
-      --cat-drink: #00c7e6; --cat-touristy: #de350b; --cat-eat: #eb5a46;
-      --cat-default: #7a869a;
-    }
-    * { box-sizing: border-box; }
-    html { height: 100%; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--board-bg); color: var(--text-dark); margin: 0;
-      padding: 0; height: 100%; display: flex; flex-direction: column;
-      overflow: hidden;
-    }
-    .app-header {
-      padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
-      background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px);
-      border-bottom: 1px solid var(--border-color); display: flex;
-      justify-content: space-between; align-items: center; flex-shrink: 0;
-      position: sticky; top: 0; z-index: 10;
-    }
-    .app-header h1 { font-size: 1.25rem; margin: 0; color: var(--text-dark); }
-    .controls button {
-      background-color: var(--column-bg); border: none; border-radius: var(--card-radius);
-      padding: var(--spacing) calc(var(--spacing) * 1.5); font-size: 0.9rem;
-      font-weight: 500; color: var(--text-medium); cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
-      display: inline-flex; /* For icon alignment */
-      align-items: center;
-      gap: 0.5em; /* Space between icon and text */
-    }
-    .controls button:hover { background-color: #dfe1e6; }
-    .controls button:active { transform: scale(0.98); } /* Fun button press effect */
-
-    .board-container {
-      display: flex; flex-grow: 1; padding: calc(var(--spacing) * 2);
-      gap: calc(var(--spacing) * 2); overflow-x: auto; align-items: stretch;
-    }
-    .board-column {
-      background-color: var(--column-bg); border-radius: var(--radius);
-      display: flex; flex-direction: column; flex-shrink: 0; max-height: 100%;
-      transition: flex-basis 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin-left 0.3s ease;
-    }
-    .board-container.columns-3 .board-column:not(.hidden) { flex-basis: calc((100% - var(--spacing) * 4) / 3); }
-    .board-container.columns-4 .board-column:not(.hidden) { flex-basis: calc((100% - var(--spacing) * 6) / 4); }
-    .board-column.hidden {
-      flex-basis: 0 !important; padding: 0; opacity: 0; overflow: hidden;
-      border: none; margin-left: calc(var(--spacing) * -2);
-    }
-    .column-header {
-      padding: var(--spacing) calc(var(--spacing) * 1.5); margin-bottom: var(--spacing);
-      font-weight: 600; color: var(--text-medium); display: flex;
-      justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--border-color); flex-shrink: 0;
-    }
-    .column-title { font-size: 0.95rem; }
-    .weather-info { font-size: 0.85rem; text-align: right; display: flex; align-items: center; gap: var(--spacing); }
-    .weather-info img { width: 30px; height: 30px; }
-    .column-list {
-      list-style: none; padding: 0 var(--spacing) var(--spacing); margin: 0;
-      flex-grow: 1; overflow-y: auto; min-height: 60px;
-    }
-    .recommendation-card {
-      background-color: var(--card-bg); border-radius: var(--card-radius);
-      padding: calc(var(--spacing) * 1.25); margin-bottom: var(--spacing);
-      box-shadow: var(--shadow); cursor: grab; border-left: 4px solid transparent;
-      transition: border-color 0.2s;
-    }
-    .recommendation-card:hover { background-color: #f8f9fa; }
-    .card-header { display: flex; align-items: center; gap: var(--spacing); margin-bottom: calc(var(--spacing) * 0.5); }
-    .card-emoji { font-size: 1.1rem; line-height: 1; }
-    .card-name { flex-grow: 1; font-weight: 600; font-size: 0.95rem; color: var(--text-dark); }
-    .card-description { font-size: 0.85rem; color: var(--text-light); padding-left: calc(1.1rem + var(--spacing)); line-height: 1.4; }
-    .recommendation-card.category-Sightseeing { border-left-color: var(--cat-sightseeing); }
-    .recommendation-card.category-Curios { border-left-color: var(--cat-curios); }
-    .recommendation-card.category-Art { border-left-color: var(--cat-art); }
-    .recommendation-card.category-Activities { border-left-color: var(--cat-activities); }
-    .recommendation-card.category-Chill { border-left-color: var(--cat-chill); }
-    .recommendation-card.category-Concert { border-left-color: var(--cat-concert); }
-    .recommendation-card.category-Drinkplaces { border-left-color: var(--cat-drink); }
-    .recommendation-card.category-Touristy { border-left-color: var(--cat-touristy); }
-    .recommendation-card.category-Eat { border-left-color: var(--cat-eat); }
-    .recommendation-card.category-Uncategorized { border-left-color: var(--cat-default); }
-    .sortable-ghost { opacity: 0.4; background: #cceeff; }
-    .sortable-drag { opacity: 0.9; transform: rotate(2deg); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-    .loading-state, .error-state { padding: 1rem; text-align: center; color: var(--text-light); font-size: 0.9rem; width: 100%; }
-    .spinner { width: 20px; height: 20px; border: 2px solid rgba(0, 82, 204, 0.2); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s ease-in-out infinite; display: inline-block; margin-right: 0.5rem; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
 </head>
 <body>
 
@@ -117,8 +22,17 @@
       </button>
     </div>
   </header>
+  <div class="share-bar" id="share-bar">
+      <label for="share-url-input">Your current share link:</label>
+      <input type="text" id="share-url-input" readonly>
+      <button id="copy-url-btn">
+          <i class="fas fa-copy"></i> Copy
+      </button>
+      <span id="copy-confirmation" class="copy-confirm-inline"></span>
+  </div>
 
   <main class="board-container" id="board">
+    {/* Columns will be generated by JavaScript */}
     <div class="loading-state"><div class="spinner"></div> Loading...</div>
   </main>
 
@@ -129,26 +43,26 @@
     const COPENHAGEN_LON = 12.5683;
     const TRIP_DATES = ["2025-04-16", "2025-04-17", "2025-04-18"];
     const HASH_PREFIX = "#boardState=";
-    const INDEX_PAD_LENGTH = 2;
+    const INDEX_PAD_LENGTH = 2; // Use 2 digits for item index (00-99)
     const WEATHER_CACHE_KEY = 'copenhagenWeatherCache'; // Key for localStorage
     const CACHE_EXPIRY_MS = 60 * 60 * 1000; // 1 hour in milliseconds
 
     // --- Globals ---
     let allPlacesData = [];
-    let placeIdToIndexMap = {};
+    let placeIdToIndexMap = {}; // Map place.id -> index in allPlacesData
     let cardElements = {};
     const boardElement = document.getElementById('board');
     const toggleButton = document.getElementById('toggle-unassigned-btn');
     let isUnassignedVisible = false;
-    const COLUMN_IDS_ORDER = ['unassigned', ...TRIP_DATES];
+    const COLUMN_IDS_ORDER = ['unassigned', ...TRIP_DATES]; // Fixed order for saving/loading
 
-    // --- Emoji Mapping & Category Class (same as before) ---
+    // --- Emoji Mapping & Category Class ---
     const categoryEmojis = { 'Sightseeing': '🗺️', 'Curios': '👾', 'Art': '🎨', 'Activities': '🚴‍♀️', 'Chill': '🌳', 'Concert Venues': '🎸', 'Drinkplaces': '🍺', 'Touristy': '📸', 'Eat': '🍔', 'Default': '📍' };
     function getEmojiForCategory(category) { return categoryEmojis[category] || categoryEmojis['Default']; }
     function getCategoryClass(category) { return `category-${(category || 'Uncategorized').replace(/\s+/g, '')}`; }
 
-    // --- CSV Parsing (same as before) ---
-    function parseCSV(csvText) { /* ... same code ... */
+    // --- CSV Parsing ---
+    function parseCSV(csvText) {
         const lines = csvText.trim().split('\n'); if (lines.length < 2) return [];
         const headers = lines[0].split(',').map(h => h.trim().toLowerCase()); const data = [];
         for (let i = 1; i < lines.length; i++) {
@@ -169,8 +83,8 @@
         } return data;
     }
 
-    // --- Load Data from CSV (same as before, includes originalIndex) ---
-    async function loadPlacesFromCSV(url) { /* ... same code ... */
+    // --- Load Data from CSV ---
+    async function loadPlacesFromCSV(url) {
         try {
             const response = await fetch(url); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const csvText = await response.text(); const parsedData = parseCSV(csvText);
@@ -183,120 +97,110 @@
         } catch (error) { console.error("Error loading/parsing CSV:", error); boardElement.innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle"></i> Failed to load recommendations.</div>`; throw error; }
     }
 
-    // --- Fetch Weather Data (Using WeatherAPI.com) ---
     // --- Fetch Weather Data (Using WeatherAPI.com with Caching) ---
-async function fetchWeatherData() {
-    // 1. Try loading from cache first
-    try {
-        const cachedDataJSON = localStorage.getItem(WEATHER_CACHE_KEY);
-        if (cachedDataJSON) {
-            const cachedData = JSON.parse(cachedDataJSON);
-            const cacheAge = Date.now() - cachedData.timestamp;
-            if (cacheAge < CACHE_EXPIRY_MS) {
-                console.log("Using cached weather data.");
-                return cachedData.data; // Return cached data if fresh
-            } else {
-                console.log("Weather cache expired.");
-            }
-        }
-    } catch (e) {
-        console.error("Error reading weather cache:", e);
-        localStorage.removeItem(WEATHER_CACHE_KEY); // Clear potentially corrupted cache
-    }
-
-    // 2. If cache is invalid or missing, fetch from API
-    console.log("Fetching new weather data...");
-    if (!WEATHERAPI_COM_KEY || WEATHERAPI_COM_KEY === "YOUR_WEATHERAPI_COM_KEY") { // Check for placeholder
-        console.warn("WeatherAPI.com key not set.");
-        // Display placeholder immediately if key is missing
-        updateWeatherDisplay(null); // Pass null to indicate key issue
-        return null;
-    }
-
-    const today = new Date();
-    const lastTripDate = new Date(TRIP_DATES[TRIP_DATES.length - 1] + 'T00:00:00');
-    const diffTime = Math.abs(lastTripDate - today);
-    const daysNeeded = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    const forecastDays = Math.min(daysNeeded, 10); // Limit to API max (10 for free, but often less)
-
-    const url = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHERAPI_COM_KEY}&q=${COPENHAGEN_LAT},${COPENHAGEN_LON}&days=${forecastDays}&aqi=no&alerts=no`;
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            const errorData = await response.json();
-            if (response.status === 401 || response.status === 403) {
-                 throw new Error(`WeatherAPI Auth Error (${response.status}): ${errorData.error.message}. Check your API key.`);
-            } else {
-                 throw new Error(`WeatherAPI Error (${response.status}): ${errorData.error.message}`);
-            }
-        }
-        const data = await response.json();
-
-        // Process the response
-        const dailyWeather = {};
-        if (data.forecast && data.forecast.forecastday) {
-            data.forecast.forecastday.forEach(day => {
-                const dateStr = day.date;
-                // Only store data for dates we actually care about in the cache
-                if (TRIP_DATES.includes(dateStr)) {
-                    dailyWeather[dateStr] = {
-                        temp: Math.round(day.day.avgtemp_c),
-                        description: day.day.condition.text,
-                        icon: day.day.condition.icon.split('/').pop()
-                    };
-                }
-            });
-        } else {
-            console.warn("WeatherAPI response format unexpected:", data);
-            return null; // Don't cache unexpected format
-        }
-
-        // 3. Save successful fetch to cache
+    async function fetchWeatherData() {
+        // 1. Try loading from cache first
         try {
-            const cachePayload = {
-                data: dailyWeather,
-                timestamp: Date.now()
-            };
-            localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(cachePayload));
-            console.log("Weather data cached.");
+            const cachedDataJSON = localStorage.getItem(WEATHER_CACHE_KEY);
+            if (cachedDataJSON) {
+                const cachedData = JSON.parse(cachedDataJSON);
+                const cacheAge = Date.now() - cachedData.timestamp;
+                if (cacheAge < CACHE_EXPIRY_MS) {
+                    console.log("Using cached weather data.");
+                    return cachedData.data; // Return cached data if fresh
+                } else {
+                    console.log("Weather cache expired.");
+                }
+            }
         } catch (e) {
-            console.error("Error saving weather data to cache:", e);
+            console.error("Error reading weather cache:", e);
+            localStorage.removeItem(WEATHER_CACHE_KEY); // Clear potentially corrupted cache
         }
 
-        return dailyWeather; // Return the newly fetched data
+        // 2. If cache is invalid or missing, fetch from API
+        console.log("Fetching new weather data...");
+        if (!WEATHERAPI_COM_KEY || WEATHERAPI_COM_KEY === "YOUR_WEATHERAPI_COM_KEY") { // Check for placeholder
+            console.warn("WeatherAPI.com key not set.");
+            updateWeatherDisplay(null); // Pass null to indicate key issue
+            return null;
+        }
 
-    } catch (error) {
-        console.error("Error fetching WeatherAPI.com data:", error);
-        // Display specific error message if possible
-        updateWeatherDisplay(null); // Pass null to indicate fetch error
-        return null; // Indicate failure
+        const today = new Date();
+        const lastTripDate = new Date(TRIP_DATES[TRIP_DATES.length - 1] + 'T00:00:00');
+        const diffTime = Math.abs(lastTripDate - today);
+        const daysNeeded = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const forecastDays = Math.min(daysNeeded, 10); // Limit to API max
+
+        const url = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHERAPI_COM_KEY}&q=${COPENHAGEN_LAT},${COPENHAGEN_LON}&days=${forecastDays}&aqi=no&alerts=no`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                     throw new Error(`WeatherAPI Auth Error (${response.status}): ${errorData.error.message}. Check your API key.`);
+                } else {
+                     throw new Error(`WeatherAPI Error (${response.status}): ${errorData.error.message}`);
+                }
+            }
+            const data = await response.json();
+
+            // Process the response
+            const dailyWeather = {};
+            if (data.forecast && data.forecast.forecastday) {
+                data.forecast.forecastday.forEach(day => {
+                    const dateStr = day.date;
+                    if (TRIP_DATES.includes(dateStr)) {
+                        dailyWeather[dateStr] = {
+                            temp: Math.round(day.day.avgtemp_c),
+                            description: day.day.condition.text,
+                            icon: day.day.condition.icon.split('/').pop()
+                        };
+                    }
+                });
+            } else {
+                console.warn("WeatherAPI response format unexpected:", data);
+                return null;
+            }
+
+            // 3. Save successful fetch to cache
+            try {
+                const cachePayload = { data: dailyWeather, timestamp: Date.now() };
+                localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(cachePayload));
+                console.log("Weather data cached.");
+            } catch (e) { console.error("Error saving weather data to cache:", e); }
+
+            return dailyWeather;
+
+        } catch (error) {
+            console.error("Error fetching WeatherAPI.com data:", error);
+            updateWeatherDisplay(null); // Pass null to indicate fetch error
+            return null;
+        }
     }
-}
 
     // --- Render UI Elements ---
-    function createColumnElement(id, title) { /* ... same code ... */
+    function createColumnElement(id, title) {
         const column = document.createElement('div'); column.className = 'board-column'; column.id = `column-${id}`;
         column.innerHTML = `<div class="column-header"><span class="column-title">${title}</span><div class="weather-info" id="weather-${id}"><span class="loading-state"><div class="spinner"></div></span></div></div><div class="column-list" id="list-${id}"></div>`;
         return column;
     }
-    function createCardElement(place) { /* ... same code ... */
+    function createCardElement(place) {
         const card = document.createElement('div'); card.className = `recommendation-card ${place.categoryClass}`; card.dataset.id = place.id;
         card.innerHTML = `<div><div class="card-header"><span class="card-emoji">${place.emoji}</span><span class="card-name">${place.name}</span></div>${place.description ? `<p class="card-description">${place.description}</p>` : ''}</div>`;
         return card;
     }
 
-    // --- Update Weather Display (Adjusted for WeatherAPI.com icons) ---
+    // --- Update Weather Display ---
     function updateWeatherDisplay(weatherData) {
         COLUMN_IDS_ORDER.forEach(id => {
             const weatherEl = document.getElementById(`weather-${id}`);
-            if (!weatherEl || id === 'unassigned') return; // Skip unassigned or if element not found
+            if (!weatherEl || id === 'unassigned') return;
 
             let weatherHtml = '';
             const dayWeather = weatherData ? weatherData[id] : null;
 
             if (dayWeather) {
-                 // Construct the full icon URL for WeatherAPI.com (assuming day icons)
                  const iconUrl = `https://cdn.weatherapi.com/weather/64x64/day/${dayWeather.icon}`;
                  weatherHtml = `
                     <img src="${iconUrl}" alt="${dayWeather.description}" title="${dayWeather.description}">
@@ -304,8 +208,7 @@ async function fetchWeatherData() {
                 `;
             } else if (!WEATHERAPI_COM_KEY || WEATHERAPI_COM_KEY === "YOUR_WEATHERAPI_COM_KEY") {
                 weatherHtml = '<i class="fas fa-key" title="API Key needed for weather"></i>';
-            } else if (weatherData === null) {
-                // Error occurred during fetch, message shown by fetch function
+            } else if (weatherData === null) { // Check if fetch failed overall
                  weatherHtml = '<i class="fas fa-exclamation-circle" title="Weather unavailable"></i>';
             } else {
                  weatherHtml = '<span>-</span>'; // No data specifically for this day
@@ -314,68 +217,128 @@ async function fetchWeatherData() {
         });
     }
 
-    // --- URL Hash State Persistence (same as before) ---
-    function saveBoardStateToURL() { /* ... same code ... */
-        let stateString = ""; COLUMN_IDS_ORDER.forEach(columnId => {
-            const listElement = document.getElementById(`list-${columnId}`); stateString += "&";
-            if (listElement) { const itemIds = Array.from(listElement.querySelectorAll('.recommendation-card')).map(card => card.dataset.id);
-                itemIds.forEach(id => { const index = placeIdToIndexMap[id];
-                    if (index !== undefined) { stateString += String(index).padStart(INDEX_PAD_LENGTH, '0'); }
-                    else { console.warn(`No index for card ID: ${id}`); } });
-            } });
-        try { const encodedState = btoa(stateString); history.replaceState(null, '', HASH_PREFIX + encodedState); }
-        catch (e) { console.error("Failed to encode/set URL hash:", e); }
+    // --- URL Hash State Persistence ---
+    function saveBoardStateToURL() {
+        let stateString = "";
+        COLUMN_IDS_ORDER.forEach(columnId => {
+            const listElement = document.getElementById(`list-${columnId}`);
+            stateString += "&";
+            if (listElement) {
+                const itemIds = Array.from(listElement.querySelectorAll('.recommendation-card'))
+                                     .map(card => card.dataset.id);
+                itemIds.forEach(id => {
+                    const index = placeIdToIndexMap[id];
+                    if (index !== undefined) {
+                        stateString += String(index).padStart(INDEX_PAD_LENGTH, '0');
+                    } else { console.warn(`No index for card ID: ${id}`); }
+                });
+            }
+        });
+
+        try {
+            const encodedState = btoa(stateString);
+            history.replaceState(null, '', HASH_PREFIX + encodedState);
+            updateShareBarURL(); // Update the displayed URL
+            triggerShareBarShake(); // Trigger the animation
+        } catch (e) { console.error("Failed to encode/set URL hash:", e); }
     }
-    function loadBoardStateFromURL() { /* ... same code ... */
+
+    function loadBoardStateFromURL() {
         if (!window.location.hash || !window.location.hash.startsWith(HASH_PREFIX)) { return null; }
-        try { const encodedState = window.location.hash.substring(HASH_PREFIX.length); const decodedState = atob(encodedState);
-            const parts = decodedState.split('&').slice(1); if (parts.length !== COLUMN_IDS_ORDER.length) { console.error(`URL state parts mismatch. Expected ${COLUMN_IDS_ORDER.length}, got ${parts.length}`); return null; }
-            const loadedState = {}; parts.forEach((part, columnIndex) => { const columnId = COLUMN_IDS_ORDER[columnIndex]; const listId = `list-${columnId}`; loadedState[listId] = [];
-                for (let i = 0; i < part.length; i += INDEX_PAD_LENGTH) { const indexStr = part.substring(i, i + INDEX_PAD_LENGTH); const index = parseInt(indexStr, 10);
-                    if (!isNaN(index) && index >= 0 && index < allPlacesData.length) { loadedState[listId].push(allPlacesData[index].id); }
-                    else { console.warn(`Invalid index ${indexStr} in URL state for column ${columnId}`); } } });
+        try {
+            const encodedState = window.location.hash.substring(HASH_PREFIX.length);
+            const decodedState = atob(encodedState);
+            const parts = decodedState.split('&').slice(1);
+            if (parts.length !== COLUMN_IDS_ORDER.length) { console.error(`URL state parts mismatch. Expected ${COLUMN_IDS_ORDER.length}, got ${parts.length}`); return null; }
+            const loadedState = {};
+            parts.forEach((part, columnIndex) => {
+                const columnId = COLUMN_IDS_ORDER[columnIndex];
+                const listId = `list-${columnId}`;
+                loadedState[listId] = [];
+                for (let i = 0; i < part.length; i += INDEX_PAD_LENGTH) {
+                    const indexStr = part.substring(i, i + INDEX_PAD_LENGTH);
+                    const index = parseInt(indexStr, 10);
+                    if (!isNaN(index) && index >= 0 && index < allPlacesData.length) {
+                        loadedState[listId].push(allPlacesData[index].id);
+                    } else { console.warn(`Invalid index ${indexStr} in URL state for column ${columnId}`); }
+                }
+            });
             return loadedState;
         } catch (e) { console.error("Failed to load/parse URL hash state:", e); return null; }
     }
 
-    // --- Initialize SortableJS (same as before) ---
-    function initializeDragAndDrop() { /* ... same code ... */
-        const lists = document.querySelectorAll('.column-list'); lists.forEach(list => {
-            new Sortable(list, { group: 'shared', animation: 150, ghostClass: 'sortable-ghost', dragClass: 'sortable-drag', onEnd: saveBoardStateToURL }); });
+    // --- Initialize SortableJS ---
+    function initializeDragAndDrop() {
+        const lists = document.querySelectorAll('.column-list');
+        lists.forEach(list => {
+            new Sortable(list, { group: 'shared', animation: 150, ghostClass: 'sortable-ghost', dragClass: 'sortable-drag', onEnd: saveBoardStateToURL });
+        });
     }
 
-    // --- Toggle Unassigned Column (Updated Button Text) ---
+    // --- Toggle Unassigned Column ---
     function toggleUnassigned() {
         const unassignedCol = document.getElementById('column-unassigned');
         if (unassignedCol) {
             isUnassignedVisible = !isUnassignedVisible;
             unassignedCol.classList.toggle('hidden', !isUnassignedVisible);
-            // Update button text and icon
             const buttonTextSpan = toggleButton.querySelector('span');
             const buttonIcon = toggleButton.querySelector('i');
             if (isUnassignedVisible) {
                 buttonTextSpan.textContent = "Hide Mattia's Tips";
-                buttonIcon.className = 'fas fa-eye-slash'; // Change icon
+                buttonIcon.className = 'fas fa-eye-slash';
             } else {
                 buttonTextSpan.textContent = "Show Mattia's Tips";
-                buttonIcon.className = 'fas fa-lightbulb'; // Change icon back
+                buttonIcon.className = 'fas fa-lightbulb';
             }
-            // Update parent class for column width calculation
             boardElement.classList.toggle('columns-3', !isUnassignedVisible);
             boardElement.classList.toggle('columns-4', isUnassignedVisible);
         }
     }
 
-    // --- Populate Board from State or Default (same as before) ---
-    function populateBoard(initialState) { /* ... same code ... */
-        const allItemIds = new Set(allPlacesData.map(p => p.id)); const placedItemIds = new Set();
-        if (initialState) { Object.entries(initialState).forEach(([listId, itemIds]) => { const listElement = document.getElementById(listId);
-            if (listElement) { itemIds.forEach(itemId => { if (cardElements[itemId]) { listElement.appendChild(cardElements[itemId]); placedItemIds.add(itemId); } else { console.warn(`Card ID ${itemId} not found.`); } });
-            } else { console.warn(`List ID ${listId} not found.`); } }); }
-        const unassignedList = document.getElementById('list-unassigned'); if (unassignedList) { allItemIds.forEach(itemId => { if (!placedItemIds.has(itemId) && cardElements[itemId]) { unassignedList.appendChild(cardElements[itemId]); } });
+    // --- Populate Board from State or Default ---
+    function populateBoard(initialState) {
+        const allItemIds = new Set(allPlacesData.map(p => p.id));
+        const placedItemIds = new Set();
+        if (initialState) {
+            Object.entries(initialState).forEach(([listId, itemIds]) => {
+                const listElement = document.getElementById(listId);
+                if (listElement) {
+                    itemIds.forEach(itemId => {
+                        if (cardElements[itemId]) {
+                            listElement.appendChild(cardElements[itemId]);
+                            placedItemIds.add(itemId);
+                        } else { console.warn(`Card ID ${itemId} not found.`); }
+                    });
+                } else { console.warn(`List ID ${listId} not found.`); }
+            });
+        }
+        const unassignedList = document.getElementById('list-unassigned');
+        if (unassignedList) {
+            allItemIds.forEach(itemId => {
+                if (!placedItemIds.has(itemId) && cardElements[itemId]) {
+                    unassignedList.appendChild(cardElements[itemId]);
+                }
+            });
         } else { console.error("Unassigned list not found."); }
     }
 
+    // --- Update Share Bar ---
+    function updateShareBarURL() {
+        const shareUrlInput = document.getElementById('share-url-input');
+        if (shareUrlInput) {
+            shareUrlInput.value = window.location.href;
+        }
+    }
+
+    // --- Trigger Shake Animation ---
+    function triggerShareBarShake() {
+        const shareBar = document.getElementById('share-bar');
+        if (shareBar) {
+            shareBar.classList.remove('shake-effect');
+            void shareBar.offsetWidth; // Trigger reflow to restart animation
+            shareBar.classList.add('shake-effect');
+        }
+    }
 
     // --- Main Initialization ---
     async function initializeApp() {
@@ -383,7 +346,7 @@ async function fetchWeatherData() {
         // 1. Load data and weather concurrently
         const [places, weatherData] = await Promise.all([
           loadPlacesFromCSV('copenhagen_places.csv'),
-          fetchWeatherData() // Now uses WeatherAPI.com
+          fetchWeatherData()
         ]);
         allPlacesData = places;
 
@@ -400,7 +363,7 @@ async function fetchWeatherData() {
 
         // 3. Create Columns
         COLUMN_IDS_ORDER.forEach(id => {
-            let title = "Mattia's Tips"; // Updated title for unassigned
+            let title = "Mattia's Tips";
             if (id !== 'unassigned') {
                 const dateObj = new Date(id + 'T00:00:00');
                 const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
@@ -408,12 +371,12 @@ async function fetchWeatherData() {
                 title = `${dayName}, ${monthDay}`;
             }
             const column = createColumnElement(id, title);
-            if (id === 'unassigned') { column.classList.add('hidden'); } // Start hidden
+            if (id === 'unassigned') { column.classList.add('hidden'); }
             boardElement.appendChild(column);
         });
-        boardElement.classList.add('columns-3'); // Initial width class
+        boardElement.classList.add('columns-3');
 
-        // 4. Update weather display (uses WeatherAPI.com icons now)
+        // 4. Update weather display
         updateWeatherDisplay(weatherData);
 
         // 5. Load state from URL or default
@@ -424,19 +387,39 @@ async function fetchWeatherData() {
         }
         populateBoard(initialState);
 
+        // Update share bar with initial URL
+        updateShareBarURL();
+
         // 6. Initialize Drag and Drop
         initializeDragAndDrop();
 
         // 7. Setup Toggle Button Listener & Initial Text
         toggleButton.addEventListener('click', toggleUnassigned);
-        // Set initial button text based on default state (hidden)
         toggleButton.querySelector('span').textContent = "Show Mattia's Tips";
         toggleButton.querySelector('i').className = 'fas fa-lightbulb';
 
+        // 8. Setup Copy Button Listener
+        const copyUrlBtn = document.getElementById('copy-url-btn');
+        const shareUrlInput = document.getElementById('share-url-input');
+        const copyConfirm = document.getElementById('copy-confirmation');
 
-        // 8. Save initial state to URL if needed
+        copyUrlBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(shareUrlInput.value);
+                copyConfirm.textContent = 'Copied!';
+                copyConfirm.classList.add('visible');
+                setTimeout(() => { copyConfirm.classList.remove('visible'); }, 2000);
+            } catch (err) {
+                console.error('Failed to copy URL: ', err);
+                copyConfirm.textContent = 'Copy failed';
+                copyConfirm.classList.add('visible');
+                setTimeout(() => { copyConfirm.classList.remove('visible'); }, 2000);
+            }
+        });
+
+        // 9. Save initial state to URL if needed (ensures bar is correct on first load)
         if (!window.location.hash.startsWith(HASH_PREFIX)) {
-            saveBoardStateToURL();
+            saveBoardStateToURL(); // This will also call updateShareBarURL and shake
         }
 
       } catch (error) {
