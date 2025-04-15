@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copenhagen Trip Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <style>
+    /* CSS remains the same as the previous version */
+    :root {
+      --board-bg: #f4f5f7; --column-bg: #ebecf0; --card-bg: #ffffff;
+      --text-dark: #172b4d; --text-medium: #42526e; --text-light: #6b778c;
+      --primary: #0052cc; --border-color: #dfe1e6;
+      --shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+      --radius: 6px; --card-radius: 3px; --spacing: 8px;
+      --cat-sightseeing: #00b8d9; --cat-curios: #6554c0; --cat-art: #ff7452;
+      --cat-activities: #36b37e; --cat-chill: #ffab00; --cat-concert: #ff8b00;
+      --cat-drink: #00c7e6; --cat-touristy: #de350b; --cat-eat: #eb5a46;
+      --cat-default: #7a869a;
+    }
+    * { box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--board-bg); color: var(--text-dark); margin: 0;
+      padding: 0; height: 100%; display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .app-header {
+      padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
+      background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px);
+      border-bottom: 1px solid var(--border-color); display: flex;
+      justify-content: space-between; align-items: center; flex-shrink: 0;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .app-header h1 { font-size: 1.25rem; margin: 0; color: var(--text-dark); }
+    .controls button {
+      background-color: var(--column-bg); border: none; border-radius: var(--card-radius);
+      padding: var(--spacing) calc(var(--spacing) * 1.5); font-size: 0.9rem;
+      font-weight: 500; color: var(--text-medium); cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .controls button:hover { background-color: #dfe1e6; }
+    .board-container {
+      display: flex; flex-grow: 1; padding: calc(var(--spacing) * 2);
+      gap: calc(var(--spacing) * 2); overflow-x: auto; align-items: stretch;
+    }
+    .board-column {
+      background-color: var(--column-bg); border-radius: var(--radius);
+      display: flex; flex-direction: column; flex-shrink: 0; max-height: 100%;
+      transition: flex-basis 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin-left 0.3s ease;
+    }
+    .board-container.columns-3 .board-column:not(.hidden) { flex-basis: calc((100% - var(--spacing) * 4) / 3); }
+    .board-container.columns-4 .board-column:not(.hidden) { flex-basis: calc((100% - var(--spacing) * 6) / 4); }
+    .board-column.hidden {
+      flex-basis: 0 !important; padding: 0; opacity: 0; overflow: hidden;
+      border: none; margin-left: calc(var(--spacing) * -2);
+    }
+    .column-header {
+      padding: var(--spacing) calc(var(--spacing) * 1.5); margin-bottom: var(--spacing);
+      font-weight: 600; color: var(--text-medium); display: flex;
+      justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border-color); flex-shrink: 0;
+    }
+    .column-title { font-size: 0.95rem; }
+    .weather-info { font-size: 0.85rem; text-align: right; display: flex; align-items: center; gap: var(--spacing); }
+    .weather-info img { width: 30px; height: 30px; }
+    .column-list {
+      list-style: none; padding: 0 var(--spacing) var(--spacing); margin: 0;
+      flex-grow: 1; overflow-y: auto; min-height: 60px;
+    }
+    .recommendation-card {
+      background-color: var(--card-bg); border-radius: var(--card-radius);
+      padding: calc(var(--spacing) * 1.25); margin-bottom: var(--spacing);
+      box-shadow: var(--shadow); cursor: grab; border-left: 4px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .recommendation-card:hover { background-color: #f8f9fa; }
+    .card-header { display: flex; align-items: center; gap: var(--spacing); margin-bottom: calc(var(--spacing) * 0.5); }
+    .card-emoji { font-size: 1.1rem; line-height: 1; }
+    .card-name { flex-grow: 1; font-weight: 600; font-size: 0.95rem; color: var(--text-dark); }
+    .card-description { font-size: 0.85rem; color: var(--text-light); padding-left: calc(1.1rem + var(--spacing)); line-height: 1.4; }
+    .recommendation-card.category-Sightseeing { border-left-color: var(--cat-sightseeing); }
+    .recommendation-card.category-Curios { border-left-color: var(--cat-curios); }
+    .recommendation-card.category-Art { border-left-color: var(--cat-art); }
+    .recommendation-card.category-Activities { border-left-color: var(--cat-activities); }
+    .recommendation-card.category-Chill { border-left-color: var(--cat-chill); }
+    .recommendation-card.category-Concert { border-left-color: var(--cat-concert); }
+    .recommendation-card.category-Drinkplaces { border-left-color: var(--cat-drink); }
+    .recommendation-card.category-Touristy { border-left-color: var(--cat-touristy); }
+    .recommendation-card.category-Eat { border-left-color: var(--cat-eat); }
+    .recommendation-card.category-Uncategorized { border-left-color: var(--cat-default); }
+    .sortable-ghost { opacity: 0.4; background: #cceeff; }
+    .sortable-drag { opacity: 0.9; transform: rotate(2deg); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+    .loading-state, .error-state { padding: 1rem; text-align: center; color: var(--text-light); font-size: 0.9rem; width: 100%; }
+    .spinner { width: 20px; height: 20px; border: 2px solid rgba(0, 82, 204, 0.2); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s ease-in-out infinite; display: inline-block; margin-right: 0.5rem; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <h1>🇩🇰 Copenhagen Trip Planner</h1>
+    <div class="controls">
+      <button id="toggle-unassigned-btn">Show Unassigned</button>
+    </div>
+  </header>
+
+  <main class="board-container" id="board">
+    <div class="loading-state"><div class="spinner"></div> Loading...</div>
+  </main>
+
+  <script>
+    // --- Configuration ---
+    const OPENWEATHERMAP_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"; // <-- IMPORTANT
+    const COPENHAGEN_LAT = 55.6761;
+    const COPENHAGEN_LON = 12.5683;
+    const TRIP_DATES = ["2025-04-16", "2025-04-17", "2025-04-18"];
+    const HASH_PREFIX = "#boardState=";
+    const INDEX_PAD_LENGTH = 2; // Use 2 digits for item index (00-99)
+
+    // --- Globals ---
+    let allPlacesData = [];
+    let placeIdToIndexMap = {}; // Map place.id -> index in allPlacesData
+    let cardElements = {};
+    const boardElement = document.getElementById('board');
+    const toggleButton = document.getElementById('toggle-unassigned-btn');
+    let isUnassignedVisible = false;
+    const COLUMN_IDS_ORDER = ['unassigned', ...TRIP_DATES]; // Fixed order for saving/loading
+
+    // --- Emoji Mapping & Category Class (same as before) ---
+    const categoryEmojis = { 'Sightseeing': '🗺️', 'Curios': '👾', 'Art': '🎨', 'Activities': '🚴‍♀️', 'Chill': '🌳', 'Concert Venues': '🎸', 'Drinkplaces': '🍺', 'Touristy': '📸', 'Eat': '🍔', 'Default': '📍' };
+    function getEmojiForCategory(category) { return categoryEmojis[category] || categoryEmojis['Default']; }
+    function getCategoryClass(category) { return `category-${(category || 'Uncategorized').replace(/\s+/g, '')}`; }
+
+    // --- CSV Parsing (same as before) ---
+    function parseCSV(csvText) { /* ... same code ... */
+        const lines = csvText.trim().split('\n'); if (lines.length < 2) return [];
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase()); const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = []; let currentLine = lines[i]; let inQuotes = false; let currentValue = '';
+            for (let j = 0; j < currentLine.length; j++) {
+            const char = currentLine[j];
+            if (char === '"') { if (inQuotes && currentLine[j + 1] === '"') { currentValue += '"'; j++; } else { inQuotes = !inQuotes; } }
+            else if (char === ',' && !inQuotes) { values.push(currentValue.trim()); currentValue = ''; }
+            else { currentValue += char; }
+            }
+            values.push(currentValue.trim());
+            if (values.length === headers.length) {
+            const entry = {}; headers.forEach((header, index) => {
+                let val = values[index]; if (val.startsWith('"') && val.endsWith('"')) { val = val.substring(1, val.length - 1); }
+                entry[header] = val.replace(/""/g, '"');
+            }); data.push(entry);
+            } else { console.warn(`Skipping malformed CSV line ${i + 1}`); }
+        } return data;
+    }
+
+    // --- Load Data from CSV ---
+    async function loadPlacesFromCSV(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const csvText = await response.text();
+        const parsedData = parseCSV(csvText);
+        // Assign index during mapping
+        return parsedData.map((item, index) => ({
+          id: (item.name || `item-${index}`).replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase(),
+          name: item.name || 'Unnamed Place',
+          category: item.category || 'Uncategorized',
+          description: item.description || '',
+          emoji: getEmojiForCategory(item.category),
+          categoryClass: getCategoryClass(item.category),
+          originalIndex: index // Store the original index
+        }));
+      } catch (error) {
+        console.error("Error loading/parsing CSV:", error);
+        boardElement.innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle"></i> Failed to load recommendations.</div>`;
+        throw error;
+      }
+    }
+
+    // --- Fetch Weather Data (same as before) ---
+    async function fetchWeatherData() { /* ... same code ... */
+        if (!OPENWEATHERMAP_API_KEY || OPENWEATHERMAP_API_KEY === "YOUR_OPENWEATHERMAP_API_KEY") { console.warn("OpenWeatherMap API key not set."); return null; }
+        const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${COPENHAGEN_LAT}&lon=${COPENHAGEN_LON}&exclude=current,minutely,hourly,alerts&appid=${OPENWEATHERMAP_API_KEY}&units=metric`;
+        try { const response = await fetch(url); if (!response.ok) { const e = await response.json(); throw new Error(`Weather API (${response.status}): ${e.message}`); }
+            const data = await response.json(); const dailyWeather = {};
+            data.daily.forEach(day => { const dateStr = new Date(day.dt * 1000).toISOString().split('T')[0];
+            if (TRIP_DATES.includes(dateStr)) { dailyWeather[dateStr] = { temp: Math.round(day.temp.day), description: day.weather[0].description, icon: day.weather[0].icon }; } });
+            return dailyWeather;
+        } catch (error) { console.error("Error fetching weather:", error); return null; }
+    }
+
+    // --- Render UI Elements (same as before) ---
+    function createColumnElement(id, title) { /* ... same code ... */
+        const column = document.createElement('div'); column.className = 'board-column'; column.id = `column-${id}`;
+        column.innerHTML = `<div class="column-header"><span class="column-title">${title}</span><div class="weather-info" id="weather-${id}"><span class="loading-state"><div class="spinner"></div></span></div></div><div class="column-list" id="list-${id}"></div>`;
+        return column;
+    }
+    function createCardElement(place) { /* ... same code ... */
+        const card = document.createElement('div'); card.className = `recommendation-card ${place.categoryClass}`; card.dataset.id = place.id;
+        card.innerHTML = `<div><div class="card-header"><span class="card-emoji">${place.emoji}</span><span class="card-name">${place.name}</span></div>${place.description ? `<p class="card-description">${place.description}</p>` : ''}</div>`;
+        return card;
+    }
+    function updateWeatherDisplay(weatherData) { /* ... same code ... */
+        COLUMN_IDS_ORDER.forEach(id => { const weatherEl = document.getElementById(`weather-${id}`); if (!weatherEl) return;
+            let weatherHtml = ''; const isDateColumn = TRIP_DATES.includes(id);
+            if (isDateColumn) { const dayWeather = weatherData ? weatherData[id] : null;
+                if (!weatherData && OPENWEATHERMAP_API_KEY !== "YOUR_OPENWEATHERMAP_API_KEY" && OPENWEATHERMAP_API_KEY) { weatherHtml = '<i class="fas fa-exclamation-circle" title="Weather unavailable"></i>'; }
+                else if (dayWeather) { weatherHtml = `<img src="https://openweathermap.org/img/wn/${dayWeather.icon}.png" alt="${dayWeather.description}" title="${dayWeather.description}"><span>${dayWeather.temp}°C</span>`; }
+                else if (!OPENWEATHERMAP_API_KEY || OPENWEATHERMAP_API_KEY === "YOUR_OPENWEATHERMAP_API_KEY") { weatherHtml = '<i class="fas fa-key" title="API Key needed for weather"></i>'; }
+                else { weatherHtml = '<span>-</span>'; }
+            } else { weatherHtml = ''; }
+            weatherEl.innerHTML = weatherHtml;
+        });
+    }
+
+    // --- URL Hash State Persistence ---
+    function saveBoardStateToURL() {
+        let stateString = "";
+        COLUMN_IDS_ORDER.forEach(columnId => {
+            const listElement = document.getElementById(`list-${columnId}`);
+            stateString += "&"; // Add delimiter for the column
+            if (listElement) {
+                const itemIds = Array.from(listElement.querySelectorAll('.recommendation-card'))
+                                     .map(card => card.dataset.id);
+                itemIds.forEach(id => {
+                    const index = placeIdToIndexMap[id]; // Use the pre-calculated map
+                    if (index !== undefined) {
+                        stateString += String(index).padStart(INDEX_PAD_LENGTH, '0');
+                    } else {
+                        console.warn(`Could not find index for card ID: ${id}`);
+                    }
+                });
+            }
+        });
+
+        try {
+            const encodedState = btoa(stateString);
+            // Use replaceState to avoid adding to browser history for every drag
+            history.replaceState(null, '', HASH_PREFIX + encodedState);
+            // console.log("Board state saved to URL:", stateString, encodedState);
+        } catch (e) {
+            console.error("Failed to encode or set URL hash:", e);
+        }
+    }
+
+    function loadBoardStateFromURL() {
+        if (!window.location.hash || !window.location.hash.startsWith(HASH_PREFIX)) {
+            return null;
+        }
+
+        try {
+            const encodedState = window.location.hash.substring(HASH_PREFIX.length);
+            const decodedState = atob(encodedState);
+            // console.log("Decoded state string:", decodedState);
+
+            const parts = decodedState.split('&').slice(1); // Split by & and remove first empty element
+
+            if (parts.length !== COLUMN_IDS_ORDER.length) {
+                console.error(`URL state parts mismatch. Expected ${COLUMN_IDS_ORDER.length}, got ${parts.length}`);
+                return null;
+            }
+
+            const loadedState = {}; // Format: { "list-id": ["card-id1", ...] }
+            parts.forEach((part, columnIndex) => {
+                const columnId = COLUMN_IDS_ORDER[columnIndex];
+                const listId = `list-${columnId}`;
+                loadedState[listId] = [];
+
+                for (let i = 0; i < part.length; i += INDEX_PAD_LENGTH) {
+                    const indexStr = part.substring(i, i + INDEX_PAD_LENGTH);
+                    const index = parseInt(indexStr, 10);
+                    if (!isNaN(index) && index >= 0 && index < allPlacesData.length) {
+                        loadedState[listId].push(allPlacesData[index].id);
+                    } else {
+                        console.warn(`Invalid index ${indexStr} found in URL state for column ${columnId}`);
+                    }
+                }
+            });
+            // console.log("Loaded board state from URL:", loadedState);
+            return loadedState;
+
+        } catch (e) {
+            console.error("Failed to load or parse board state from URL hash:", e);
+            // Clear invalid hash? Optional.
+            // history.replaceState(null, '', window.location.pathname + window.location.search);
+            return null;
+        }
+    }
+
+    // --- Initialize SortableJS ---
+    function initializeDragAndDrop() {
+      const lists = document.querySelectorAll('.column-list');
+      lists.forEach(list => {
+        new Sortable(list, {
+          group: 'shared',
+          animation: 150,
+          ghostClass: 'sortable-ghost',
+          dragClass: 'sortable-drag',
+          onEnd: saveBoardStateToURL // Save state to URL on drop
+        });
+      });
+    }
+
+    // --- Toggle Unassigned Column (same as before) ---
+    function toggleUnassigned() { /* ... same code ... */
+        const unassignedCol = document.getElementById('column-unassigned');
+        if (unassignedCol) {
+            isUnassignedVisible = !isUnassignedVisible;
+            unassignedCol.classList.toggle('hidden', !isUnassignedVisible);
+            toggleButton.textContent = isUnassignedVisible ? 'Hide Unassigned' : 'Show Unassigned';
+            boardElement.classList.toggle('columns-3', !isUnassignedVisible);
+            boardElement.classList.toggle('columns-4', isUnassignedVisible);
+            // Optional: Save visibility state? Maybe not needed if default is hidden.
+        }
+    }
+
+    // --- Populate Board from State or Default (same as before) ---
+    function populateBoard(initialState) { /* ... same code ... */
+        const allItemIds = new Set(allPlacesData.map(p => p.id));
+        const placedItemIds = new Set();
+
+        // Place items based on initial state (from URL or default)
+        if (initialState) {
+            Object.entries(initialState).forEach(([listId, itemIds]) => {
+                const listElement = document.getElementById(listId);
+                if (listElement) {
+                    itemIds.forEach(itemId => {
+                        if (cardElements[itemId]) {
+                            listElement.appendChild(cardElements[itemId]);
+                            placedItemIds.add(itemId);
+                        } else { console.warn(`Card element ID ${itemId} not found.`); }
+                    });
+                } else { console.warn(`List element ID ${listId} not found.`); }
+            });
+        }
+
+        // Place remaining items in unassigned
+        const unassignedList = document.getElementById('list-unassigned');
+        if (unassignedList) {
+            allItemIds.forEach(itemId => {
+                if (!placedItemIds.has(itemId) && cardElements[itemId]) {
+                    unassignedList.appendChild(cardElements[itemId]);
+                }
+            });
+        } else { console.error("Unassigned list not found."); }
+    }
+
+
+    // --- Main Initialization ---
+    async function initializeApp() {
+      try {
+        // 1. Load data and weather concurrently
+        const [places, weatherData] = await Promise.all([
+          loadPlacesFromCSV('copenhagen_places.csv'),
+          fetchWeatherData()
+        ]);
+        allPlacesData = places;
+
+        // Create map for quick ID -> Index lookup needed for saving state
+        placeIdToIndexMap = {};
+        allPlacesData.forEach((place, index) => {
+            placeIdToIndexMap[place.id] = index;
+        });
+
+        // Clear loading state
+        boardElement.innerHTML = '';
+
+        // 2. Create all card elements in memory
+        cardElements = {};
+        allPlacesData.forEach(place => {
+            cardElements[place.id] = createCardElement(place);
+        });
+
+        // 3. Create Columns
+        COLUMN_IDS_ORDER.forEach(id => {
+            let title = 'Unassigned Items';
+            if (id !== 'unassigned') {
+                const dateObj = new Date(id + 'T00:00:00');
+                const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                const monthDay = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                title = `${dayName}, ${monthDay}`;
+            }
+            const column = createColumnElement(id, title);
+            if (id === 'unassigned') {
+                column.classList.add('hidden'); // Start hidden
+            }
+            boardElement.appendChild(column);
+        });
+        boardElement.classList.add('columns-3'); // Set initial width class
+
+        // 4. Update weather display
+        updateWeatherDisplay(weatherData);
+
+        // 5. Load state from URL (priority) or default
+        let initialState = loadBoardStateFromURL();
+        if (!initialState) {
+            // Default state: all items in unassigned
+            initialState = { [`list-unassigned`]: allPlacesData.map(p => p.id) };
+            COLUMN_IDS_ORDER.slice(1).forEach(id => initialState[`list-${id}`] = []); // Empty day columns
+        }
+        populateBoard(initialState);
+
+        // 6. Initialize Drag and Drop (after populating)
+        initializeDragAndDrop();
+
+        // 7. Setup Toggle Button Listener
+        toggleButton.addEventListener('click', toggleUnassigned);
+
+        // 8. Save initial state to URL if it wasn't loaded from there
+        if (!window.location.hash.startsWith(HASH_PREFIX)) {
+            saveBoardStateToURL();
+        }
+
+      } catch (error) {
+        console.error("Initialization failed:", error);
+        // Error message already shown if CSV loading failed
+      }
+    }
+
+    // --- Start the app ---
+    document.addEventListener('DOMContentLoaded', initializeApp);
+
+  </script>
+</body>
+</html>

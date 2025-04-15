@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copenhagen Insider Guide</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0057b8;
+      --primary-dark: #003d82;
+      --secondary: #c8102e;
+      --secondary-light: #ff3b59;
+      --dark: #292b2c;
+      --light: #f8f9fa;
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --card-hover: #ffffff;
+      --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+      --card-shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+      --radius-sm: 6px;
+      --transition: 0.3s ease;
+      
+      /* Category Colors */
+      --cat-sightseeing: #4299e1;
+      --cat-curios: #9f7aea;
+      --cat-art: #ed64a6;
+      --cat-activities: #48bb78;
+      --cat-chill: #38b2ac;
+      --cat-concert: #ed8936;
+      --cat-drink: #ecc94b;
+      --cat-touristy: #fc8181;
+      --cat-eat: #f56565;
+      --cat-default: var(--primary);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--dark);
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .hero {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+      background-size: cover;
+      background-position: center;
+      padding: 5rem 2rem;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      letter-spacing: -0.5px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      font-weight: 300;
+    }
+
+    .hero:before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: linear-gradient(to top, var(--bg), transparent);
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: -4rem auto 0;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .controls-panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .search-container {
+      position: relative;
+      flex: 2;
+      min-width: 300px;
+    }
+
+    .search-container i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+    }
+
+    .filters-container {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      flex: 1;
+      min-width: 300px;
+      justify-content: flex-end;
+    }
+
+    select, input, button {
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid #ddd;
+      background: var(--light);
+      color: var(--dark);
+      transition: all 0.2s;
+    }
+
+    input {
+      width: 100%;
+      padding-left: 2.5rem;
+    }
+
+    select {
+      padding-right: 2.5rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: calc(100% - 1rem) center;
+      cursor: pointer;
+    }
+
+    .view-toggle {
+      display: flex;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+
+    .view-toggle button {
+      border: none;
+      background: var(--light);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .view-toggle button.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .places-section {
+      flex: 2;
+      min-width: 0;
+    }
+
+    .map-section {
+      flex: 1;
+      min-width: 340px;
+      position: sticky;
+      top: 2rem;
+      height: calc(100vh - 4rem);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    .place-count {
+      margin-bottom: 1rem;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .place-count strong {
+      color: var(--primary);
+    }
+
+    .export-btn {
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .export-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Grid Layout */
+    .places-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .place-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .place-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .place-header {
+      padding: 1.25rem 1.25rem 0.75rem;
+      position: relative;
+    }
+
+    .place-category {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+      margin-bottom: 0.5rem;
+      background-color: var(--cat-default);
+    }
+
+    .category-Sightseeing { background-color: var(--cat-sightseeing); }
+    .category-Curios { background-color: var(--cat-curios); }
+    .category-Art { background-color: var(--cat-art); }
+    .category-Activities { background-color: var(--cat-activities); }
+    .category-Chill { background-color: var(--cat-chill); }
+    .category-Concert { background-color: var(--cat-concert); }
+    .category-Drinkplaces { background-color: var(--cat-drink); }
+    .category-Touristy { background-color: var(--cat-touristy); }
+    .category-Eat { background-color: var(--cat-eat); }
+
+    .place-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .place-content {
+      padding: 0 1.25rem 1.25rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .place-desc {
+      margin-bottom: 1rem;
+      color: #555;
+      font-size: 0.95rem;
+      flex-grow: 1;
+    }
+
+    .place-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* List Layout */
+    .places-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .place-list-item {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .place-list-item:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .list-item-main {
+      padding: 1.25rem;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .list-item-actions {
+      background: rgba(0,0,0,0.02);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    /* Loading spinner */
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(0, 87, 184, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+    }
+
+    .no-results i {
+      font-size: 3rem;
+      color: #ddd;
+      margin-bottom: 1rem;
+    }
+
+    .no-results h3 {
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .no-results p {
+      color: #666;
+    }
+
+    footer {
+      margin-top: 4rem;
+      background: var(--dark);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    footer p {
+      opacity: 0.7;
+    }
+
+    /* Make the map sticky at different points depending on screen width */
+    @media (max-width: 1200px) {
+      .flex-row {
+        flex-direction: column;
+      }
+      
+      .map-section {
+        height: 500px;
+        position: relative;
+        top: 0;
+        order: -1;
+        margin-bottom: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .controls-panel {
+        padding: 1rem;
+      }
+      
+      .view-toggle {
+        margin-left: auto;
+      }
+      
+      .map-section {
+        height: 350px;
+      }
+      
+      .places-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* LeafletJS popup customization */
+    .leaflet-popup-content-wrapper {
+      border-radius: var(--radius-sm);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .leaflet-popup-content {
+      margin: 0;
+      width: 250px !important;
+    }
+
+    .popup-content {
+      padding: 1rem;
+    }
+
+    .popup-header {
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      font-weight: 500;
+    }
+
+    .popup-body {
+      padding: 1rem;
+    }
+
+    .popup-footer {
+      padding: 0.75rem 1rem;
+      background: #f7f7f7;
+      display: flex;
+      justify-content: center;
+    }
+
+    .popup-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Dark mode toggle */
+    .dark-mode-toggle {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--dark);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      transition: all 0.2s;
+    }
+
+    .dark-mode-toggle:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Dark mode */
+    body.dark-mode {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --card-hover: #2d2d2d;
+      --light: #333;
+      --dark: #e1e1e1;
+      --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --card-shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode select, 
+    body.dark-mode input,
+    body.dark-mode .view-toggle button:not(.active) {
+      background: #333;
+      border-color: #444;
+      color: #e1e1e1;
+    }
+
+    body.dark-mode .list-item-actions {
+      background: rgba(255,255,255,0.03);
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>Copenhagen Insider Guide</h1>
+    <p>Discover hidden gems, local favorites, and must-see spots in the heart of Denmark</p>
+  </div>
+
+  <div class="container">
+    <div class="controls-panel">
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Search places, categories, or descriptions...">
+      </div>
+      
+      <div class="filters-container">
+        <select id="category-select">
+          <option value="all">All Categories</option>
+          <!-- Categories will be populated dynamically -->
+        </select>
+        
+        <select id="sort-select">
+          <option value="name">Sort by Name</option>
+          <option value="category">Sort by Category</option>
+        </select>
+        
+        <div class="view-toggle">
+          <button id="grid-view" class="active" title="Grid View">
+            <i class="fas fa-th-large"></i>
+          </button>
+          <button id="list-view" title="List View">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-row">
+      <div class="places-section">
+        <div class="place-count">
+          <div>Showing <strong id="places-count">0</strong> places</div>
+          <button id="export-csv" class="export-btn">
+            <i class="fas fa-download"></i> Export CSV
+          </button>
+        </div>
+
+        <div id="places-container" class="places-grid">
+          <div class="loader">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="map-section">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Copenhagen Insider Guide • Created with ❤️ for travelers and locals alike</p>
+  </footer>
+
+  <button class="dark-mode-toggle" id="dark-mode-toggle" title="Toggle Dark Mode">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    let allPlacesData = []; // Holds the raw data from CSV
+    let map;
+    const markers = {};
+    const defaultCoords = [55.6761, 12.5683]; // Copenhagen Center
+    const markersByCategory = {};
+
+    // --- CSV Parsing Function ---
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split('\n');
+      if (lines.length < 2) return []; // No data or only header
+
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const data = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = [];
+        let currentLine = lines[i];
+        let inQuotes = false;
+        let currentValue = '';
+
+        for (let j = 0; j < currentLine.length; j++) {
+          const char = currentLine[j];
+
+          if (char === '"') {
+            if (inQuotes && currentLine[j + 1] === '"') {
+              currentValue += '"';
+              j++; // Skip next quote
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (char === ',' && !inQuotes) {
+            values.push(currentValue.trim());
+            currentValue = '';
+          } else {
+            currentValue += char;
+          }
+        }
+        values.push(currentValue.trim()); // Add last value
+
+        if (values.length === headers.length) {
+          const entry = {};
+          headers.forEach((header, index) => {
+            // Remove surrounding quotes if they exist from parsing logic
+            let val = values[index];
+            if (val.startsWith('"') && val.endsWith('"')) {
+              val = val.substring(1, val.length - 1);
+            }
+            // Replace escaped double quotes ("") with single quote (")
+            entry[header] = val.replace(/""/g, '"');
+          });
+          data.push(entry);
+        } else {
+          console.warn(`Skipping malformed CSV line ${i + 1}: ${lines[i]}`);
+        }
+      }
+      return data;
+    }
+
+    // --- Load Data from CSV ---
+    async function loadPlacesFromCSV(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const csvText = await response.text();
+        const parsedData = parseCSV(csvText);
+
+        return parsedData.map(item => ({
+          name: item.name || 'Unnamed Place',
+          category: item.category || 'Uncategorized',
+          description: item.description || '',
+          coordinates: [
+            parseFloat(item.latitude) || defaultCoords[0],
+            parseFloat(item.longitude) || defaultCoords[1]
+          ],
+          url: item.url || ''
+        }));
+      } catch (error) {
+        console.error("Error loading or parsing CSV:", error);
+        document.getElementById('places-container').innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-exclamation-circle"></i>
+            <h3>Error Loading Data</h3>
+            <p>Could not load recommendations. Please check the CSV file or network connection.</p>
+          </div>
+        `;
+        return []; // Return empty array on error
+      }
+    }
+
+    // --- Initialize Map ---
+    function initializeMap() {
+      map = L.map('map').setView(defaultCoords, 12);
+      
+      // Use a nicer map style from Stamen
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(map);
+    }
+
+    // --- Add Markers to Map ---
+    function addMarkers(places) {
+      // Clear existing markers
+      Object.values(markers).forEach(marker => map.removeLayer(marker));
+      for (const key in markers) delete markers[key]; // Clear markers object
+      
+      // Clear category marker groups
+      for (const category in markersByCategory) {
+        if (markersByCategory[category]) {
+          map.removeLayer(markersByCategory[category]);
+          delete markersByCategory[category];
+        }
+      }
+
+      // Group markers by category for easier management
+      const categoryGroups = {};
+      
+      places.forEach(place => {
+        if (place.coordinates && !isNaN(place.coordinates[0]) && !isNaN(place.coordinates[1])) {
+          const categoryClass = getCategoryClass(place.category);
+          
+          // Create custom icon based on category
+          const icon = L.divIcon({
+            className: `custom-marker ${categoryClass}`,
+            html: `<div class="marker-inner" style="background-color: var(--${categoryClass})"><i class="fas ${getCategoryIcon(place.category)}"></i></div>`,
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
+            popupAnchor: [0, -15]
+          });
+          
+          const marker = L.marker(place.coordinates, {icon: icon})
+            .bindPopup(createPopupContent(place));
+          
+          // Store marker by place name
+          markers[place.name] = marker;
+          
+          // Group by category
+          if (!categoryGroups[place.category]) {
+            categoryGroups[place.category] = [];
+          }
+          categoryGroups[place.category].push(marker);
+        } else {
+          console.warn(`Invalid or missing coordinates for: ${place.name}`);
+        }
+      });
+      
+      // Add category groups to map
+      for (const category in categoryGroups) {
+        const group = L.layerGroup(categoryGroups[category]);
+        markersByCategory[category] = group;
+        group.addTo(map);
+      }
+      
+      // Fit map to markers if there are any
+      if (Object.keys(markers).length > 0) {
+        const bounds = L.featureGroup(Object.values(markers)).getBounds();
+        map.fitBounds(bounds, { padding: [50, 50] });
+      }
+    }
+    
+    // Helper function to create popup content
+    function createPopupContent(place) {
+      return `
+        <div class="popup-wrapper">
+          <div class="popup-header">${place.name}</div>
+          <div class="popup-body">
+            <strong>${place.category}</strong>
+            <p>${place.description || 'No description available.'}</p>
+          </div>
+          ${place.url ? `
+            <div class="popup-footer">
+              <a href="${place.url}" target="_blank">
+                <i class="fas fa-external-link-alt"></i> View on Map
+              </a>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+    
+    // Helper function to get category class
+    function getCategoryClass(category) {
+      const categoryMap = {
+        'Sightseeing': 'cat-sightseeing',
+        'Curios': 'cat-curios',
+        'Art': 'cat-art',
+        'Activities': 'cat-activities',
+        'Chill': 'cat-chill',
+        'Concert Venues': 'cat-concert',
+        'Drinkplaces': 'cat-drink',
+        'Touristy': 'cat-touristy',
+        'Eat': 'cat-eat'
+      };
+      
+      return categoryMap[category] || 'cat-default';
+    }
+    
+    // Helper function to get category icon
+    function getCategoryIcon(category) {
+      const iconMap = {
+        'Sightseeing': 'fa-landmark',
+        'Curios': 'fa-store',
+        'Art': 'fa-palette',
+        'Activities': 'fa-running',
+        'Chill': 'fa-umbrella-beach',
+        'Concert Venues': 'fa-music',
+        'Drinkplaces': 'fa-glass-martini-alt',
+        'Touristy': 'fa-camera',
+        'Eat': 'fa-utensils'
+      };
+      
+      return iconMap[category] || 'fa-map-marker-alt';
+    }
+
+    // --- Populate Category Filter ---
+    function populateCategoryFilter(places) {
+      const categories = [...new Set(places.map(p => p.category))].sort();
+      const select = document.getElementById('category-select');
+      // Clear existing options except "All Categories"
+      select.options.length = 1; 
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+
+    // --- Render Places in Grid View ---
+    function renderPlacesGrid(places) {
+      const container = document.getElementById('places-container');
+      container.className = 'places-grid';
+      
+      if (places.length === 0) {
+        container.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h3>No Places Found</h3>
+            <p>Try adjusting your search criteria or explore different categories.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = ''; // Clear previous content
+      document.getElementById('places-count').textContent = places.length;
+      
+      places.forEach(place => {
+        const card = document.createElement('div');
+        card.className = 'place-card';
+        
+        const categoryClass = `category-${place.category.split(' ')[0]}`;
+        const hasUrl = place.url && place.url.trim() !== '';
+        
+        card.innerHTML = `
+          <div class="place-header">
+            <span class="place-category ${categoryClass}">${place.category}</span>
+            <h3 class="place-title">${place.name}</h3>
+          </div>
+          <div class="place-content">
+            <p class="place-desc">${place.description || 'No description available.'}</p>
+            <div class="place-actions">
+              <button class="btn btn-primary locate-btn" data-name="${place.name}">
+                <i class="fas fa-map-marker-alt"></i> Show on Map
+              </button>
+              ${hasUrl ? `
+                <a href="${place.url}" target="_blank" class="btn btn-outline">
+                  <i class="fas fa-external-link-alt"></i> Details
+                </a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(card);
+      });
+      
+      // Re-attach event listeners
+      attachLocateButtons();
+    }
+
+    // --- Render Places in List View ---
+    function renderPlacesList(places) {
+      const container = document.getElementById('places-container');
+      container.className = 'places-list';
+      
+      if (places.length === 0) {
+        container.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h3>No Places Found</h3>
+            <p>Try adjusting your search criteria or explore different categories.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = ''; // Clear previous content
+      document.getElementById('places-count').textContent = places.length;
+      
+      places.forEach(place => {
+        const listItem = document.createElement('div');
+        listItem.className = 'place-list-item';
+        
+        const categoryClass = `category-${place.category.split(' ')[0]}`;
+        const hasUrl = place.url && place.url.trim() !== '';
+        
+        listItem.innerHTML = `
+          <div class="list-item-main">
+            <span class="place-category ${categoryClass}">${place.category}</span>
+            <h3 class="place-title">${place.name}</h3>
+            <p class="place-desc">${place.description || 'No description available.'}</p>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-primary locate-btn" data-name="${place.name}">
+              <i class="fas fa-map-marker-alt"></i> Show on Map
+            </button>
+            ${hasUrl ? `
+              <a href="${place.url}" target="_blank" class="btn btn-outline">
+                <i class="fas fa-external-link-alt"></i> Details
+              </a>
+            ` : ''}
+          </div>
+        `;
+        
+        container.appendChild(listItem);
+      });
+      
+      // Re-attach event listeners
+      attachLocateButtons();
+    }
+
+    // --- Attach locate button event listeners ---
+    function attachLocateButtons() {
+      document.querySelectorAll('.locate-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const placeName = e.target.closest('.locate-btn').getAttribute('data-name');
+          const marker = markers[placeName];
+          if (marker) {
+            map.setView(marker.getLatLng(), 16); // Zoom closer
+            marker.openPopup();
+            // Scroll map into view if on small screens
+            if (window.innerWidth <= 1200) {
+              document.querySelector('.map-section').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
+          } else {
+            console.warn(`Marker not found for: ${placeName}`);
+          }
+        });
+      });
+    }
+
+    // --- Filter and Sort Places ---
+    function filterAndSortPlaces() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const category = document.getElementById('category-select').value;
+      const sortBy = document.getElementById('sort-select').value;
+      
+      let filteredPlaces = allPlacesData.filter(place => {
+        const matchesSearch = place.name.toLowerCase().includes(searchTerm) || 
+                             place.description.toLowerCase().includes(searchTerm) ||
+                             place.category.toLowerCase().includes(searchTerm);
+        const matchesCategory = category === 'all' || place.category === category;
+        return matchesSearch && matchesCategory;
+      });
+      
+      filteredPlaces.sort((a, b) => {
+        if (sortBy === 'name') {
+          return a.name.localeCompare(b.name);
+        } else if (sortBy === 'category') {
+          // Sort by category first, then by name within category
+          const categoryCompare = a.category.localeCompare(b.category);
+          return categoryCompare !== 0 ? categoryCompare : a.name.localeCompare(b.name);
+        }
+        return 0;
+      });
+      
+      const isGridView = document.getElementById('grid-view').classList.contains('active');
+      if (isGridView) {
+        renderPlacesGrid(filteredPlaces);
+      } else {
+        renderPlacesList(filteredPlaces);
+      }
+      
+      addMarkers(filteredPlaces); // Update map markers based on filtered results
+    }
+
+    // --- Export to CSV ---
+    function exportToCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      // Add headers
+      csvContent += "Name,Category,Description,Latitude,Longitude,URL\n"; 
+      
+      allPlacesData.forEach(place => {
+        // Function to safely quote CSV fields
+        const escapeCSV = (field) => {
+          const stringField = String(field === null || field === undefined ? '' : field);
+          // If field contains comma, newline, or double quote, enclose in double quotes
+          if (stringField.includes(',') || stringField.includes('\n') || stringField.includes('"')) {
+            // Escape existing double quotes by doubling them
+            return `"${stringField.replace(/"/g, '""')}"`;
+          }
+          return stringField;
+        };
+
+        const row = [
+          escapeCSV(place.name),
+          escapeCSV(place.category),
+          escapeCSV(place.description),
+          place.coordinates[0],
+          place.coordinates[1],
+          escapeCSV(place.url)
+        ].join(',');
+        csvContent += row + "\n";
+      });
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "copenhagen_places_export.csv");
+      document.body.appendChild(link); 
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // --- Dark Mode Toggle ---
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      
+      const icon = document.querySelector('#dark-mode-toggle i');
+      if (isDarkMode) {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      }
+      
+      // Store preference in localStorage
+      localStorage.setItem('darkMode', isDarkMode);
+    }
+
+    // --- Initialize Application ---
+    async function initializeApp() {
+      // Check for dark mode preference
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      
+      if (savedDarkMode || (prefersDarkMode && savedDarkMode !== 'false')) {
+        document.body.classList.add('dark-mode');
+        document.querySelector('#dark-mode-toggle i').classList.remove('fa-moon');
+        document.querySelector('#dark-mode-toggle i').classList.add('fa-sun');
+      }
+      
+      initializeMap();
+      
+      // Add map styles for custom markers
+      const mapStyle = document.createElement('style');
+      mapStyle.textContent = `
+        .custom-marker {
+          background: transparent;
+        }
+        .marker-inner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          color: white;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+      `;
+      document.head.appendChild(mapStyle);
+      
+      // Load CSV data
+      allPlacesData = await loadPlacesFromCSV('copenhagen_places.csv');
+      
+      if (allPlacesData.length > 0) {
+        populateCategoryFilter(allPlacesData);
+        filterAndSortPlaces(); // Initial render with all data
+      }
+
+      // Setup Event Listeners
+      document.getElementById('search-input').addEventListener('input', filterAndSortPlaces);
+      document.getElementById('category-select').addEventListener('change', filterAndSortPlaces);
+      document.getElementById('sort-select').addEventListener('change', filterAndSortPlaces);
+      document.getElementById('export-csv').addEventListener('click', exportToCSV);
+      document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+      
+      document.getElementById('grid-view').addEventListener('click', () => {
+        document.getElementById('grid-view').classList.add('active');
+        document.getElementById('list-view').classList.remove('active');
+        filterAndSortPlaces(); // Re-render with current filters/sort
+      });
+      
+      document.getElementById('list-view').addEventListener('click', () => {
+        document.getElementById('list-view').classList.add('active');
+        document.getElementById('grid-view').classList.remove('active');
+        filterAndSortPlaces(); // Re-render with current filters/sort
+      });
+    }
+
+    // --- Start the app once the DOM is ready ---
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+</html>

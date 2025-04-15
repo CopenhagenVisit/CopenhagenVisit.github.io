@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Copenhagen Checklist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0057b8; /* Blue */
+      --secondary: #c8102e; /* Red */
+      --text-dark: #2d3748; /* Dark Gray */
+      --text-light: #4a5568; /* Medium Gray */
+      --bg-main: #f7fafc; /* Very Light Gray */
+      --bg-item: #ffffff;
+      --border-color: #e2e8f0;
+      --checked-bg: #edf2f7;
+      --checked-text: #a0aec0;
+      --radius: 8px;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --transition: 0.2s ease-in-out;
+      
+      /* Category Colors (for tags) */
+      --cat-sightseeing: #3182ce;
+      --cat-curios: #805ad5;
+      --cat-art: #d53f8c;
+      --cat-activities: #38a169;
+      --cat-chill: #319795;
+      --cat-concert: #dd6b20;
+      --cat-drink: #d69e2e;
+      --cat-touristy: #e53e3e;
+      --cat-eat: #c53030;
+      --cat-default: #718096;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.25rem;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    header p {
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+
+    .controls {
+      background-color: var(--bg-item);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .search-box {
+      flex-grow: 1;
+      position: relative;
+      min-width: 200px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 0.75rem 0.6rem 2.25rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      transition: border-color var(--transition);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 87, 184, 0.2);
+    }
+
+    .filter-box select {
+      padding: 0.6rem 2rem 0.6rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      background-color: white;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a0aec0' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      cursor: pointer;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    #clear-checked-btn {
+      background: none;
+      border: none;
+      color: var(--secondary);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius);
+      transition: background-color var(--transition);
+    }
+    
+    #clear-checked-btn:hover {
+      background-color: rgba(200, 16, 46, 0.1);
+    }
+
+    #recommendation-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .recommendation-item {
+      background-color: var(--bg-item);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      box-shadow: var(--shadow);
+      transition: background-color var(--transition), border-color var(--transition);
+      cursor: pointer;
+    }
+
+    .recommendation-item:hover {
+      border-color: #cbd5e0;
+    }
+
+    .item-checkbox {
+      flex-shrink: 0;
+      margin-top: 0.25rem; /* Align better with text */
+      width: 1.25rem;
+      height: 1.25rem;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .item-content {
+      flex-grow: 1;
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-emoji {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .item-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      transition: color var(--transition);
+    }
+
+    .item-category {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15rem 0.6rem;
+      border-radius: 50px;
+      color: white;
+      margin-left: auto; /* Pushes tag to the right */
+      white-space: nowrap;
+    }
+
+    /* Category Tag Colors */
+    .category-Sightseeing { background-color: var(--cat-sightseeing); }
+    .category-Curios { background-color: var(--cat-curios); }
+    .category-Art { background-color: var(--cat-art); }
+    .category-Activities { background-color: var(--cat-activities); }
+    .category-Chill { background-color: var(--cat-chill); }
+    .category-Concert { background-color: var(--cat-concert); }
+    .category-Drinkplaces { background-color: var(--cat-drink); }
+    .category-Touristy { background-color: var(--cat-touristy); }
+    .category-Eat { background-color: var(--cat-eat); }
+    .category-Uncategorized { background-color: var(--cat-default); }
+
+    .item-description {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      transition: color var(--transition);
+    }
+
+    /* Checked State Styling */
+    .recommendation-item.item-checked {
+      background-color: var(--checked-bg);
+      border-color: var(--border-color);
+    }
+
+    .recommendation-item.item-checked .item-name,
+    .recommendation-item.item-checked .item-description {
+      color: var(--checked-text);
+      text-decoration: line-through;
+    }
+
+    .recommendation-item.item-checked .item-emoji {
+      opacity: 0.6;
+    }
+    
+    .recommendation-item.item-checked .item-category {
+      opacity: 0.7;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      background-color: var(--bg-item);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .no-results i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #cbd5e0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1.5rem 0;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>My Copenhagen Checklist</h1>
+      <p>Your personal guide to exploring the best of the city!</p>
+    </header>
+
+    <div class="controls">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Search recommendations...">
+      </div>
+      <div class="filter-box">
+        <select id="category-select">
+          <option value="all">All Categories</option>
+          <!-- Categories populated by JS -->
+        </select>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span id="item-count-status">Loading items...</span>
+      <button id="clear-checked-btn" style="display: none;">Clear Checked</button>
+    </div>
+
+    <div id="recommendation-list">
+      <!-- Items will be loaded here -->
+    </div>
+
+    <footer>
+      <p>Happy exploring in Copenhagen!</p>
+    </footer>
+  </div>
+
+  <script>
+    let allPlacesData = [];
+    let checkedItems = new Set(); // Store names of checked items
+
+    // --- Emoji Mapping ---
+    const categoryEmojis = {
+      'Sightseeing': '🗺️',
+      'Curios': '👾',
+      'Art': '🎨',
+      'Activities': '🚴‍♀️',
+      'Chill': '🌳',
+      'Concert Venues': '🎸',
+      'Drinkplaces': '🍺',
+      'Touristy': '📸', // Changed from mermaid
+      'Eat': '🍔',
+      'Default': '📍'
+    };
+
+    function getEmojiForCategory(category) {
+      return categoryEmojis[category] || categoryEmojis['Default'];
+    }
+
+    // --- CSV Parsing (same as before) ---
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split('\n');
+      if (lines.length < 2) return [];
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const data = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = [];
+        let currentLine = lines[i];
+        let inQuotes = false;
+        let currentValue = '';
+        for (let j = 0; j < currentLine.length; j++) {
+          const char = currentLine[j];
+          if (char === '"') {
+            if (inQuotes && currentLine[j + 1] === '"') {
+              currentValue += '"'; j++;
+            } else { inQuotes = !inQuotes; }
+          } else if (char === ',' && !inQuotes) {
+            values.push(currentValue.trim()); currentValue = '';
+          } else { currentValue += char; }
+        }
+        values.push(currentValue.trim());
+        if (values.length === headers.length) {
+          const entry = {};
+          headers.forEach((header, index) => {
+            let val = values[index];
+            if (val.startsWith('"') && val.endsWith('"')) {
+              val = val.substring(1, val.length - 1);
+            }
+            entry[header] = val.replace(/""/g, '"');
+          });
+          data.push(entry);
+        } else { console.warn(`Skipping malformed CSV line ${i + 1}`); }
+      }
+      return data;
+    }
+
+    // --- Load Data from CSV ---
+    async function loadPlacesFromCSV(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const csvText = await response.text();
+        const parsedData = parseCSV(csvText);
+        return parsedData.map(item => ({
+          // Use a unique ID if possible, otherwise name is fallback
+          id: item.name.replace(/\s+/g, '-').toLowerCase(), 
+          name: item.name || 'Unnamed Place',
+          category: item.category || 'Uncategorized',
+          description: item.description || '',
+          // Coordinates not used in this view, but kept for data integrity
+          coordinates: [parseFloat(item.latitude), parseFloat(item.longitude)],
+          url: item.url || ''
+        }));
+      } catch (error) {
+        console.error("Error loading or parsing CSV:", error);
+        document.getElementById('recommendation-list').innerHTML =
+          '<p class="no-results"><i class="fas fa-exclamation-triangle"></i> Could not load recommendations.</p>';
+        updateStatus(0, 0); // Update status on error
+        return [];
+      }
+    }
+
+    // --- Local Storage for Checked State ---
+    function loadCheckedState() {
+      const storedChecked = localStorage.getItem('copenhagenCheckedItems');
+      if (storedChecked) {
+        checkedItems = new Set(JSON.parse(storedChecked));
+      } else {
+        checkedItems = new Set();
+      }
+    }
+
+    function saveCheckedState() {
+      localStorage.setItem('copenhagenCheckedItems', JSON.stringify([...checkedItems]));
+    }
+
+    // --- Populate Category Filter ---
+    function populateCategoryFilter(places) {
+      const categories = [...new Set(places.map(p => p.category))].sort();
+      const select = document.getElementById('category-select');
+      select.options.length = 1; // Clear existing options except "All"
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+
+    // --- Update Status Bar ---
+    function updateStatus(visibleCount, totalCount) {
+        const checkedCount = checkedItems.size;
+        const statusEl = document.getElementById('item-count-status');
+        const clearBtn = document.getElementById('clear-checked-btn');
+        
+        statusEl.textContent = `Showing ${visibleCount} of ${totalCount} items (${checkedCount} checked)`;
+        
+        if (checkedCount > 0) {
+            clearBtn.style.display = 'inline-block';
+        } else {
+            clearBtn.style.display = 'none';
+        }
+    }
+
+    // --- Render List ---
+    function renderList(places) {
+      const listContainer = document.getElementById('recommendation-list');
+      listContainer.innerHTML = ''; // Clear previous items
+
+      if (places.length === 0) {
+        listContainer.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <p>No recommendations match your search.</p>
+          </div>`;
+        updateStatus(0, allPlacesData.length);
+        return;
+      }
+
+      places.forEach(place => {
+        const listItem = document.createElement('div');
+        listItem.className = 'recommendation-item';
+        listItem.dataset.id = place.id; // Use data-id for easier selection
+
+        const isChecked = checkedItems.has(place.id);
+        if (isChecked) {
+          listItem.classList.add('item-checked');
+        }
+
+        const categoryClass = `category-${place.category.replace(/\s+/g, '')}`; // Make class CSS-friendly
+
+        listItem.innerHTML = `
+          <input type="checkbox" class="item-checkbox" id="check-${place.id}" ${isChecked ? 'checked' : ''}>
+          <div class="item-content">
+            <div class="item-header">
+              <span class="item-emoji">${getEmojiForCategory(place.category)}</span>
+              <label for="check-${place.id}" class="item-name">${place.name}</label>
+              <span class="item-category ${categoryClass}">${place.category}</span>
+            </div>
+            <p class="item-description">${place.description || 'No description available.'}</p>
+          </div>
+        `;
+        
+        // Add click listener to the whole item for better UX
+        listItem.addEventListener('click', (event) => {
+            // Prevent double toggling if checkbox itself is clicked
+            if (event.target.type !== 'checkbox') {
+                const checkbox = listItem.querySelector('.item-checkbox');
+                checkbox.checked = !checkbox.checked;
+                // Manually trigger change event
+                checkbox.dispatchEvent(new Event('change')); 
+            }
+        });
+
+        // Add change listener to the checkbox
+        const checkbox = listItem.querySelector('.item-checkbox');
+        checkbox.addEventListener('change', (e) => {
+          handleCheckboxChange(e.target.checked, place.id, listItem);
+        });
+
+        listContainer.appendChild(listItem);
+      });
+      
+      updateStatus(places.length, allPlacesData.length);
+    }
+
+    // --- Handle Checkbox Change ---
+    function handleCheckboxChange(isChecked, placeId, listItemElement) {
+      if (isChecked) {
+        checkedItems.add(placeId);
+        listItemElement.classList.add('item-checked');
+      } else {
+        checkedItems.delete(placeId);
+        listItemElement.classList.remove('item-checked');
+      }
+      saveCheckedState();
+      // Update status without full re-render for performance
+      updateStatus(
+          document.querySelectorAll('#recommendation-list .recommendation-item:not([style*="display: none"])').length, 
+          allPlacesData.length
+      );
+    }
+    
+    // --- Clear Checked Items ---
+    function clearChecked() {
+        if (confirm(`Are you sure you want to uncheck all ${checkedItems.size} items?`)) {
+            checkedItems.clear();
+            saveCheckedState();
+            filterAndRender(); // Re-render to update styles and status
+        }
+    }
+
+    // --- Filter and Sort Data ---
+    function filterAndSortPlaces() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const category = document.getElementById('category-select').value;
+
+      let filteredPlaces = allPlacesData.filter(place => {
+        const matchesSearch = place.name.toLowerCase().includes(searchTerm) ||
+                              place.description.toLowerCase().includes(searchTerm) ||
+                              place.category.toLowerCase().includes(searchTerm);
+        const matchesCategory = category === 'all' || place.category === category;
+        return matchesSearch && matchesCategory;
+      });
+
+      // Simple A-Z sort for now
+      filteredPlaces.sort((a, b) => a.name.localeCompare(b.name));
+
+      return filteredPlaces;
+    }
+
+    // --- Combined Filter and Render ---
+    function filterAndRender() {
+      const filteredData = filterAndSortPlaces();
+      renderList(filteredData);
+    }
+
+    // --- Initialize Application ---
+    async function initializeApp() {
+      loadCheckedState(); // Load checked state first
+      allPlacesData = await loadPlacesFromCSV('copenhagen_places.csv');
+
+      if (allPlacesData.length > 0) {
+        populateCategoryFilter(allPlacesData);
+        filterAndRender(); // Initial render
+      } else {
+        updateStatus(0, 0); // Ensure status is updated even if loading fails
+      }
+
+      // Setup Event Listeners
+      document.getElementById('search-input').addEventListener('input', filterAndRender);
+      document.getElementById('category-select').addEventListener('change', filterAndRender);
+      document.getElementById('clear-checked-btn').addEventListener('click', clearChecked);
+    }
+
+    // --- Start the app ---
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+</html>
